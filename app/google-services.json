@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1020878631068",
+    "project_id": "deneme-5f76b",
+    "storage_bucket": "deneme-5f76b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020878631068:android:0851c46a949b232fd4bd59",
+        "android_client_info": {
+          "package_name": "com.aslansoft.deneme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC67k9zHH13l6BL15g0rkxBbKvFLHng1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

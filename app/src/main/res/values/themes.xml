@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Deneme" parent="android:Theme.Material.Light.NoActionBar" >
+    <item name="android:statusBarColor">#030346</item>
+    </style>
+</resources>
