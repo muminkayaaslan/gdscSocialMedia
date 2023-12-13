@@ -82,10 +82,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-crashlytics:18.6.0")
-    implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     //Navigation
     implementation ("androidx.navigation:navigation-compose:2.7.5")
-    //SystemUiController
 
 }

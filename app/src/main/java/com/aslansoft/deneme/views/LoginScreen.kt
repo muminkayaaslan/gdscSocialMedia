@@ -4,6 +4,7 @@ package com.aslansoft.deneme.views
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -44,7 +46,9 @@ import com.google.firebase.ktx.Firebase
 fun LoginScreen(navController: NavHostController) {
     val backgroundColor = Color(3, 3, 70, 255)
     Surface(color = backgroundColor) {
-        Box(modifier = Modifier.fillMaxWidth().height(400.dp), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp), contentAlignment = Alignment.Center){
             Image(modifier = Modifier.padding(50.dp),bitmap = ImageBitmap.imageResource(R.drawable.iconbg), contentDescription = null )
         }
         Column(Modifier.fillMaxSize(),Arrangement.Center,Alignment.CenterHorizontally) {
@@ -65,7 +69,7 @@ fun LoginScreen(navController: NavHostController) {
                 
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.Yellow,
+                    unfocusedTextColor = Color.White,
                     focusedLabelColor = Color.White,
                     unfocusedLabelColor = Color.White,
                     focusedBorderColor = Color.White,

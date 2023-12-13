@@ -31,7 +31,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(110,0,238),
+    primary = Color(110,0,330),
     secondary = Color(3,218,197),
     tertiary = Color(55,0,179),
     background = Color.Black,
@@ -65,9 +65,6 @@ fun DenemeTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
 

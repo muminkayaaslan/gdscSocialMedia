@@ -34,8 +34,9 @@ fun InputScreen(navController: NavHostController) {
             .height(400.dp)){
             Image(modifier = Modifier
                 .align(Alignment.Center)
-                .background(backgroundColor),bitmap = ImageBitmap.imageResource(R.drawable.iconbg),contentDescription = null )
+                .background(backgroundColor),bitmap = ImageBitmap.imageResource(R.drawable.wolficon),contentDescription = null )
         }
+
         Spacer(modifier = Modifier.padding(5.dp))
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -46,12 +47,6 @@ fun InputScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.padding(5.dp))
             OutlinedButton(onClick = { navController.navigate("register_screen") }) {
                 Text(text = "Sign Up",color = Color.White)
-            }
-            Spacer(modifier = Modifier.padding(5.dp))
-            Button(modifier = Modifier,onClick = {  }, colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green
-            )) {
-                Text("Hello world")
             }
         }
     }
