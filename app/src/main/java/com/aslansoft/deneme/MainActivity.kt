@@ -3,6 +3,8 @@ package com.aslansoft.deneme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
@@ -11,7 +13,9 @@ import androidx.navigation.compose.rememberNavController
 import com.aslansoft.deneme.ui.theme.DenemeTheme
 import com.aslansoft.deneme.views.InputScreen
 import com.aslansoft.deneme.views.LoginScreen
+import com.aslansoft.deneme.views.MainBottomBar
 import com.aslansoft.deneme.views.MainScreen
+import com.aslansoft.deneme.views.ProfileScreen
 import com.aslansoft.deneme.views.RegisterScreen
 import com.aslansoft.deneme.views.SeePost
 import com.aslansoft.deneme.views.SendPostScreen
@@ -25,8 +29,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         setContent {
-            window.statusBarColor = getColor(R.color.background)
-            window.navigationBarColor = getColor(R.color.background)
+            if(isSystemInDarkTheme()){
+                window.statusBarColor = getColor(R.color.background)
+                window.navigationBarColor = getColor(R.color.background)
+            }
+            else{
+                window.statusBarColor = getColor(R.color.lightbackground)
+                window.navigationBarColor = getColor(R.color.lightbackground)
+            }
             DenemeTheme {
                 val db = Firebase.firestore
                 val auth = FirebaseAuth.getInstance()
@@ -58,7 +68,14 @@ class MainActivity : ComponentActivity() {
                     composable("see_post_screen"){
                         SeePost(navController = navController)
                     }
+                    composable("main_bottom_bar"){
+                        MainBottomBar(navController = navController)
+                    }
+                    composable("profile_screen"){
+                        ProfileScreen(navController = navController)
+                    }
                 }
+
 
             }
         }

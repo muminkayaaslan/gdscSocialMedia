@@ -30,46 +30,7 @@ data class Post(
 )
 @Composable
 fun SeePost(navController: NavHostController) {
-    val db = Firebase.firestore
-    val post = remember {
-        mutableStateOf("")
-    }
-    val username = remember{
-        mutableStateOf("")
-    }
-    val postList = remember {
-        mutableStateListOf<Post>()
-    }
-    Surface(
-        Modifier
-            .fillMaxSize()
-            .background(Color(3, 3, 70))) {
-        db.collection("posts").get().addOnSuccessListener {documents ->
-            for (document in documents){
-                val postData: Map<String,Any> = document.data
-                username.value = postData["username"].toString()
-                post.value = postData["post"].toString()
-                postList.add(Post(username.value, post.value))
-            }
 
-        }
-        LazyColumn{
-            items(postList.size){index ->
-                val postData = postList[index]
-                Column(modifier = Modifier
-                    .background(Color(3, 3, 70))
-                    .fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-                    Text(text = postData.username, color = Color.White)
-                    Spacer(modifier = Modifier.padding(2.dp))
-                    Text(text = postData.post,color = Color.White)
-                    Divider(
-                        modifier = Modifier.fillMaxWidth().height(1.dp), color = Color.Green
-                    )
-                }
-
-            }
-        }
-    }
 
 
 }

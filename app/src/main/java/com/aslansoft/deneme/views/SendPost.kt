@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -48,14 +49,14 @@ fun SendPostScreen(navController: NavHostController) {
         "post" to post.value,
         "username" to username.value
     )
-    val color = Color(3,3,70)
+
     Surface(modifier = Modifier
         .fillMaxSize()
-        .background(color)) {
+        , color = MaterialTheme.colorScheme.primary) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             TextField(value = post.value, onValueChange = {
                 post.value = it
-            })
+            }, singleLine = true)
             Spacer(modifier = Modifier.padding(10.dp))
             Button(onClick = {
                 db.collection("posts").add(postMap).addOnCompleteListener{
