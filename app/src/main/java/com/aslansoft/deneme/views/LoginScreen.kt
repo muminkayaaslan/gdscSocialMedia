@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
@@ -64,7 +66,7 @@ fun LoginScreen(navController: NavHostController) {
             OutlinedTextField(value = userEmail, onValueChange ={
                 userEmail = it
 
-            } , label = { Text(text = "E-Mail")},
+            } , label = { Text(text = "E-Posta")},
                 placeholder = { Text(text = "username@example.com")},
                 
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -83,7 +85,7 @@ fun LoginScreen(navController: NavHostController) {
             }
             OutlinedTextField(value = password, onValueChange ={
                 password = it
-            },label = { Text(text = "Password")},
+            },label = { Text(text = "Parola")},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedLabelColor = Color.White,
                     focusedLabelColor = Color.White,
@@ -93,7 +95,17 @@ fun LoginScreen(navController: NavHostController) {
                     unfocusedTextColor = Color.White
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-                visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
+                visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    if (passwordVisibility.value == true){
+                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
+                            MaterialTheme.colorScheme.secondary))
+                    }else{
+                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
+                            MaterialTheme.colorScheme.secondary) )
+                    }
+
+                }
             )
             Spacer(modifier = Modifier.padding(5.dp))
             OutlinedButton(onClick = { if (userEmail.isNotEmpty() && password.isNotEmpty()){
@@ -101,13 +113,13 @@ fun LoginScreen(navController: NavHostController) {
                     navController.navigate("main_screen")
 
                 }.addOnFailureListener{
-                    Toast.makeText(context,"Password Error Or Email Error",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,"Giriş Yapma Başarısız",Toast.LENGTH_SHORT).show()
                 }
             }else{
                 Toast.makeText(context,"Gerekli Alanları Doldurun", Toast.LENGTH_SHORT).show()
             }
             }) {
-                Text(text = "Log In",color = Color.White)
+                Text(text = "Giriş Yap",color = Color.White)
             }
         }
     }

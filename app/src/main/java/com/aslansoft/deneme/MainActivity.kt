@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
@@ -15,10 +14,12 @@ import com.aslansoft.deneme.views.InputScreen
 import com.aslansoft.deneme.views.LoginScreen
 import com.aslansoft.deneme.views.MainBottomBar
 import com.aslansoft.deneme.views.MainScreen
+import com.aslansoft.deneme.views.MessageList
+import com.aslansoft.deneme.views.ProfileEditScreen
 import com.aslansoft.deneme.views.ProfileScreen
 import com.aslansoft.deneme.views.RegisterScreen
-import com.aslansoft.deneme.views.SeePost
 import com.aslansoft.deneme.views.SendPostScreen
+import com.aslansoft.deneme.views.Settings
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -65,14 +66,20 @@ class MainActivity : ComponentActivity() {
                     composable("post_screen"){
                         SendPostScreen(navController = navController)
                     }
-                    composable("see_post_screen"){
-                        SeePost(navController = navController)
-                    }
                     composable("main_bottom_bar"){
                         MainBottomBar(navController = navController)
                     }
                     composable("profile_screen"){
                         ProfileScreen(navController = navController)
+                    }
+                    composable("massagelist_screen"){
+                        MessageList(navController = navController)
+                    }
+                    composable("setting_screen"){
+                        Settings(navController = navController)
+                    }
+                    composable("profileEdit_screen"){
+                        ProfileEditScreen(navController = navController)
                     }
                 }
 

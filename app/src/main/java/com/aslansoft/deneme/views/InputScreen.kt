@@ -42,11 +42,11 @@ fun InputScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.padding(10.dp))
             OutlinedButton(onClick = { navController.navigate("login_screen") }) {
-                Text(text = "Log In", color = Color.White)
+                Text(text = "Giriş Yap", color = Color.White)
             }
             Spacer(modifier = Modifier.padding(5.dp))
             OutlinedButton(onClick = { navController.navigate("register_screen") }) {
-                Text(text = "Sign Up",color = Color.White)
+                Text(text = "Kayıt Ol",color = Color.White)
             }
         }
     }

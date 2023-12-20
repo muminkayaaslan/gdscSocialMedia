@@ -5,6 +5,7 @@ package com.aslansoft.deneme.views
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
@@ -70,6 +74,7 @@ fun RegisterScreen(navController: NavHostController) {
             mutableStateOf(false)
         }
 
+
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -79,13 +84,13 @@ fun RegisterScreen(navController: NavHostController) {
             Box(modifier = Modifier
                 .height(50.dp)
                 .zIndex(1f), contentAlignment = Alignment.Center){
-                Text(text = "Welcome New Friend",color= Color.White, fontSize = 30.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold)
+                Text(text = "Hoşgeldin ${username.value}",color= Color.White, fontSize = 30.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.padding(10.dp))
             OutlinedTextField(value = username.value , onValueChange ={
                 username.value = it
             }, singleLine = true
-                ,label = { Text(text = "Username")},
+                ,label = { Text(text = "Kullanıcı Adı")},
                 colors= OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.LightGray,
                     focusedBorderColor = Color.White,
@@ -98,7 +103,7 @@ fun RegisterScreen(navController: NavHostController) {
                 println(username.value)
             OutlinedTextField(value = userEmail.value, onValueChange = {
                 userEmail.value = it
-            }, label = { Text(text = "Email", color = Color.White) },
+            }, label = { Text(text = "E-Posta", color = Color.White) },
                 placeholder = { Text(text = "username@example.com")},
                 singleLine = true, colors = outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
@@ -109,20 +114,21 @@ fun RegisterScreen(navController: NavHostController) {
             )
             OutlinedTextField(value = password.value, onValueChange = {
                 password.value = it
-            }, label = { Text(text = "Password",color = Color.White) },
+            }, label = { Text(text = "Parola",color = Color.White) },
                 singleLine = true, colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White,
                 unfocusedBorderColor = Color.LightGray,
                 unfocusedTextColor = Color.White,
                 focusedTextColor = Color.White
             ), visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
-                /*trailingIcon = {
-                    IconButton(onClick = {
-                        passwordVisibility.value = !passwordVisibility.value
-                    }) {
-
+                , trailingIcon = {
+                    if (passwordVisibility.value == true){
+                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+                    }else{
+                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
                     }
-                }*/
+
+                }
 
             )
 
@@ -172,12 +178,9 @@ fun RegisterScreen(navController: NavHostController) {
                 else{
                     Toast.makeText(context,"Gerekli Alanları Doldurmak Zorundasınız", Toast.LENGTH_SHORT).show()
                 }
-
-
             }) {
-                Text(text = "SIGN UP", color = Color.White)
+                Text(text = "Kayıt Ol", color = Color.White)
             }
         }
-
     }
 }
