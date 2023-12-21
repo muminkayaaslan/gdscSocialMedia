@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aslansoft.deneme.ui.theme.DenemeTheme
-import com.aslansoft.deneme.views.InputScreen
 import com.aslansoft.deneme.views.LoginScreen
 import com.aslansoft.deneme.views.MainBottomBar
 import com.aslansoft.deneme.views.MainScreen
@@ -47,13 +46,10 @@ class MainActivity : ComponentActivity() {
                 if (auth.currentUser != null){
                     startDestination.value = "main_screen"
                 }else{
-                    startDestination.value = "input_screen"
+                    startDestination.value = "login_screen"
                 }
                 val navController  = rememberNavController()
                 NavHost(navController = navController , startDestination = startDestination.value){
-                    composable("input_screen"){
-                            InputScreen(navController = navController)
-                    }
                     composable("main_screen"){
                             MainScreen(navController = navController)
                     }

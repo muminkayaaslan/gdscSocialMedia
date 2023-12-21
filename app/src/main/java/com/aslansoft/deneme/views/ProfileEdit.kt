@@ -1,5 +1,10 @@
 package com.aslansoft.deneme.views
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
@@ -26,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -37,7 +44,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
@@ -51,13 +62,26 @@ import com.google.firebase.storage.ktx.storage
 @Composable
 fun ProfileEditScreen(navController: NavHostController) {
     Surface(modifier = Modifier.fillMaxSize(),color = MaterialTheme.colorScheme.primary) {
+        val context = LocalContext.current
         val auth = Firebase.auth
         val db = Firebase.firestore
         val storage = Firebase.storage
+        val storageRef = storage.reference
         val currentUser = auth.currentUser
         val username = remember { mutableStateOf("") }
         val newUsername = remember { mutableStateOf("") }
         val profilePhoto = remember { mutableStateOf(false) }
+        val password = remember {
+            mutableStateOf("")
+        }
+        val newPassword = remember {
+            mutableStateOf("")
+        }
+        val passwordVisibility = remember {
+            mutableStateOf(false)
+        }
+        val downloadUrl = remember { mutableStateOf<String?>(null) }
+
 
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -67,6 +91,23 @@ fun ProfileEditScreen(navController: NavHostController) {
                     username.value = data?.get("username") as? String ?: ""
                 }
             }
+            val pickPhotoLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent() )
+            { uri ->
+                uri?.let {
+                    val userRef = storageRef.child("profilePhotos/${username.value}/profile_photo.jpg")
+                    userRef.putFile(it)
+                        .addOnSuccessListener {_ ->
+                            downloadUrl.value?.let {
+                                currentUser?.email?.let { it1 -> db.collection("users").document(it1).set("profilePhoto" to it) }
+
+                            }
+                            println(it)
+                        Toast.makeText(context,"Profil Fotoğrafı Başarıyla Güncellendi",Toast.LENGTH_LONG).show()
+                        }
+                }
+
+            }
+
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
                 .clip(RoundedCornerShape(10.dp)),
@@ -86,7 +127,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                     actionIconContentColor = MaterialTheme.colorScheme.secondary
 
                 ))
-            Spacer(modifier = Modifier.padding(vertical = 20.dp))
+            Spacer(modifier = Modifier.padding(vertical = 10.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,9 +142,8 @@ fun ProfileEditScreen(navController: NavHostController) {
                 if (profilePhoto.value == false)
                 Image(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-
+                        .fillMaxSize().clickable {
+                                                 pickPhotoLauncher.launch("image/*")
                         },
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = null,
@@ -116,7 +156,6 @@ fun ProfileEditScreen(navController: NavHostController) {
             Column(modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 OutlinedTextField(value = newUsername.value, onValueChange ={
                     newUsername.value = it
@@ -135,7 +174,65 @@ fun ProfileEditScreen(navController: NavHostController) {
                         unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
                         focusedLabelColor = MaterialTheme.colorScheme.secondary
                     ))
+                OutlinedTextField(value = password.value, onValueChange ={
+                    password.value = it
+                },label = { Text(text = "Parola")},
+                    colors = OutlinedTextFieldDefaults.
+                    colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedLabelColor = Color.White,
+                        unfocusedLabelColor = Color.White,
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        if (passwordVisibility.value == true){
+                            Image(modifier = Modifier
+                                .size(20.dp)
+                                .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
+                                MaterialTheme.colorScheme.secondary))
+                        }else{
+                            Image(modifier = Modifier
+                                .size(20.dp)
+                                .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
+                                MaterialTheme.colorScheme.secondary) )
+                        }
+
+                    }
+                )
+                OutlinedTextField(value = newPassword.value, onValueChange ={
+                    newPassword.value = it
+                },label = { Text(text = "Yeni Parola")},
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedLabelColor = Color.White,
+                        focusedLabelColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        if (passwordVisibility.value == true){
+                            Image(modifier = Modifier
+                                .size(20.dp)
+                                .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
+                                MaterialTheme.colorScheme.secondary))
+                        }else{
+                            Image(modifier = Modifier
+                                .size(20.dp)
+                                .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
+                                MaterialTheme.colorScheme.secondary) )
+                        }
+
+                    }
+                )
             }
+
             Button(modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)

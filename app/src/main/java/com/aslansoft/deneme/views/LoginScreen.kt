@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
 import com.google.firebase.auth.ktx.auth
@@ -98,10 +100,14 @@ fun LoginScreen(navController: NavHostController) {
                 visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     if (passwordVisibility.value == true){
-                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
                             MaterialTheme.colorScheme.secondary))
                     }else{
-                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
                             MaterialTheme.colorScheme.secondary) )
                     }
 
@@ -121,6 +127,16 @@ fun LoginScreen(navController: NavHostController) {
             }) {
                 Text(text = "Giriş Yap",color = Color.White)
             }
+            Spacer(modifier = Modifier.padding(vertical = 2.dp))
+            Row (modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp), horizontalArrangement = Arrangement.Center){
+                Text("Hesabın Yok Mu?", color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp)
+                Text(modifier = Modifier.clickable {
+                                                   navController.navigate("register_screen")
+                },text = "Kaydol", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp)
+            }
+
         }
     }
 }

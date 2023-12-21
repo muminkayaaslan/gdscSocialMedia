@@ -62,6 +62,9 @@ fun RegisterScreen(navController: NavHostController) {
         val password = remember {
             mutableStateOf("")
         }
+        val accessPassword = remember{
+            mutableStateOf("")
+        }
         val username = remember {
             mutableStateOf("")
         }
@@ -69,8 +72,10 @@ fun RegisterScreen(navController: NavHostController) {
 
 
         val context = LocalContext.current
-
         val passwordVisibility = remember {
+            mutableStateOf(false)
+        }
+        val accessPasswordVisibility = remember {
             mutableStateOf(false)
         }
 
@@ -123,9 +128,37 @@ fun RegisterScreen(navController: NavHostController) {
             ), visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
                     if (passwordVisibility.value == true){
-                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
                     }else{
-                        Image(modifier = Modifier.size(20.dp).clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
+                    }
+
+                }
+
+            )
+
+            OutlinedTextField(value = accessPassword.value, onValueChange = {
+                accessPassword.value = it
+            }, label = { Text(text = "Parola Doğrula",color = Color.White) },
+                singleLine = true, colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.White
+                ), visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
+                , trailingIcon = {
+                    if (accessPasswordVisibility.value == true){
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { accessPasswordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+                    }else{
+                        Image(modifier = Modifier
+                            .size(20.dp)
+                            .clickable { accessPasswordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
                     }
 
                 }
@@ -136,45 +169,50 @@ fun RegisterScreen(navController: NavHostController) {
 
             OutlinedButton(onClick = {
 
-                if (userEmail.value.isNotEmpty()&&password.value.isNotEmpty()){
+                if (userEmail.value.isNotEmpty()  &&  password.value.isNotEmpty() && username.value.isNotEmpty() && accessPassword.value.isNotEmpty()){
                     if(userEmail.value.endsWith("@gmail.com")){
-                        auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->
-                            if (task.isSuccessful){
+                        if (password.value == accessPassword.value){
+                            auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->
+                                if (task.isSuccessful){
 
-                                auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {
+                                    auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {
 
-                                    if (it.isSuccessful) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        println("başarılı")
-                                        val data = hashMapOf(
-                                            "username" to username.value,
-                                            "email" to userEmail.value
-                                        )
-                                        Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
-                                        db.collection("users").document(userEmail.value).set(data)
-                                        navController.navigate("login_screen")
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w("ErrorAuth", "signInWithEmail:failure", task.exception)
-                                        Toast.makeText(
-                                            context,
-                                            task.exception.toString(),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
+                                        if (it.isSuccessful) {
+                                            // Sign in success, update UI with the signed-in user's information
+                                            println("başarılı")
+                                            val data = hashMapOf(
+                                                "username" to username.value,
+                                                "email" to userEmail.value
+                                            )
+                                            Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
+                                            db.collection("users").document(userEmail.value).set(data)
+                                            navController.navigate("login_screen")
+                                        } else {
+                                            // If sign in fails, display a message to the user.
+                                            Log.w("ErrorAuth", "signInWithEmail:failure", task.exception)
+                                            Toast.makeText(
+                                                context,
+                                                task.exception.toString(),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
 
+                                        }
                                     }
+                                }else{
+                                    Toast.makeText(context,"This E-Mail Adress Already Exist",Toast.LENGTH_LONG).show()
                                 }
-                            }else{
-                                Toast.makeText(context,"This E-Mail Adress Already Exist",Toast.LENGTH_LONG).show()
                             }
                         }
+                        else{
+                            Toast.makeText(context,"Parolalar Aynı Olmalı",Toast.LENGTH_SHORT).show()
+                        }
+
 
                     }
                     else{
                         Toast.makeText(context,"Lütfen E-maili doğru şekilde giriniz.",Toast.LENGTH_SHORT).show()
                     }
                     }
-
                 else{
                     Toast.makeText(context,"Gerekli Alanları Doldurmak Zorundasınız", Toast.LENGTH_SHORT).show()
                 }
