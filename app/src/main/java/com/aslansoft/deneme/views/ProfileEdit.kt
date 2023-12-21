@@ -1,14 +1,11 @@
 package com.aslansoft.deneme.views
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +49,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -70,7 +70,7 @@ fun ProfileEditScreen(navController: NavHostController) {
         val currentUser = auth.currentUser
         val username = remember { mutableStateOf("") }
         val newUsername = remember { mutableStateOf("") }
-        val profilePhoto = remember { mutableStateOf(false) }
+        val profilePhoto = remember { mutableStateOf("") }
         val password = remember {
             mutableStateOf("")
         }
@@ -81,6 +81,9 @@ fun ProfileEditScreen(navController: NavHostController) {
             mutableStateOf(false)
         }
         val downloadUrl = remember { mutableStateOf<String?>(null) }
+        val photoSelected = remember {
+            mutableStateOf(false)
+        }
 
 
 
@@ -91,23 +94,43 @@ fun ProfileEditScreen(navController: NavHostController) {
                     username.value = data?.get("username") as? String ?: ""
                 }
             }
-            val pickPhotoLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent() )
-            { uri ->
+            val pickPhotoLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
                 uri?.let {
                     val userRef = storageRef.child("profilePhotos/${username.value}/profile_photo.jpg")
                     userRef.putFile(it)
-                        .addOnSuccessListener {_ ->
-                            downloadUrl.value?.let {
-                                currentUser?.email?.let { it1 -> db.collection("users").document(it1).set("profilePhoto" to it) }
+                        .addOnSuccessListener { taskSnapshot ->
+                            // Yükleme tamamlandığında downloadUrl'yi al
+                            taskSnapshot.storage.downloadUrl.addOnSuccessListener { url ->
+                                // downloadUrl değerini güncelle
+                                downloadUrl.value = url.toString()
 
+                                // Firestore belgesini güncelle
+                                currentUser?.email?.let { userEmail ->
+
+                                    db.collection("users").document(userEmail)
+                                        .update("profilePhoto" , downloadUrl.value)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(context, "Profil Fotoğrafı Başarıyla Güncellendi", Toast.LENGTH_LONG).show()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            println("Firestore Güncelleme Hatası: $e")
+                                        }
+                                }
                             }
-                            println(it)
-                        Toast.makeText(context,"Profil Fotoğrafı Başarıyla Güncellendi",Toast.LENGTH_LONG).show()
                         }
                 }
-
             }
+            currentUser?.email?.let { db.collection("users").document(it).get().addOnSuccessListener {
+                val data = it.data
+                profilePhoto.value = data?.get("profilePhoto") as String ?: ""
 
+            } }
+
+            val painter = rememberImagePainter(data = profilePhoto.value,
+                builder = {
+                    crossfade(true)
+                    transformations(CircleCropTransformation())
+                })
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
                 .clip(RoundedCornerShape(10.dp)),
@@ -139,17 +162,25 @@ fun ProfileEditScreen(navController: NavHostController) {
                     )
                     .clip(RoundedCornerShape(30.dp))
             ) {
-                if (profilePhoto.value == false)
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize().clickable {
-                                                 pickPhotoLauncher.launch("image/*")
-                        },
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
-                )else{
-                    Image(bitmap = ImageBitmap.imageResource(R.drawable.wolficon), contentDescription = null)
+                if (downloadUrl.value != null){
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                pickPhotoLauncher.launch("image/*")
+                            }
+                            .align(Alignment.Center),
+                        imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                    )
+                }
+                else{
+                    Image(modifier = Modifier
+                        .align(Alignment.Center)
+                        .clickable {
+                            pickPhotoLauncher.launch("image/*")
+                        },painter = painter, contentDescription = "profilePhoto")
                 }
 
             }

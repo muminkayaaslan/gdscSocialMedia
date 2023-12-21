@@ -61,6 +61,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
@@ -94,14 +96,14 @@ fun ProfileScreen(navController: NavHostController) {
         val post = remember { mutableStateOf("") }
         val time = remember { mutableStateOf<Timestamp?>(null) }
         val isLoading= remember { mutableStateOf(false) }
-
+        val profilePhoto = remember { mutableStateOf("") }
 
 
         currentUser?.email?.let {
             db.collection("users").document(it).get().addOnSuccessListener {
                 val data = it.data
                 username.value = data?.get("username") as? String ?: ""
-
+                profilePhoto.value = data?.get("profilePhoto") as? String ?: ""
             }
         }
         LaunchedEffect(username.value){
@@ -132,7 +134,11 @@ fun ProfileScreen(navController: NavHostController) {
                 println("Veri hatası:" + it.message)
             }
         }
-
+        val painter = rememberImagePainter( data = profilePhoto.value,
+            builder = {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+            })
 
 
         Column(modifier = Modifier
@@ -163,14 +169,21 @@ fun ProfileScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .height(150.dp)
                 .align(Alignment.CenterHorizontally)){
-                Image(modifier = Modifier.fillMaxSize(),imageVector = Icons.Filled.AccountCircle, contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
+                if (profilePhoto.value != null){
+                    Image(modifier = Modifier.fillMaxSize(),painter = painter , contentDescription = null )
+                }else{
+                    Image(modifier = Modifier.fillMaxSize(),imageVector = Icons.Filled.AccountCircle, contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
+
+                }
             }
 
             Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.secondary)
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(30.dp))
             if (isLoading.value){
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()){
+                Box(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()){
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
@@ -193,7 +206,11 @@ fun ProfileScreen(navController: NavHostController) {
                             val dateData = Date(timestamp * 1000L)
                             val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
                             val formattedDate = format.format(dateData)
-                            Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                            Row (modifier = Modifier.fillMaxWidth()){
+                                Image(modifier = Modifier.size(25.dp).padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
+                                Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+
+                            }
                             Row (modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, bottom = 3.dp)){
