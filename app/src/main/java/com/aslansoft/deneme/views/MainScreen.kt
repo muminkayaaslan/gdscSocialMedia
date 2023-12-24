@@ -83,7 +83,6 @@ fun MainScreen(navController: NavHostController) {
                     postList.add(Post(username.value, post.value))
                     isLoading.value = false
                 }
-
             }.addOnFailureListener{
                 println(it.localizedMessage)
                 Toast.makeText(context,it.localizedMessage,Toast.LENGTH_SHORT).show()
@@ -119,35 +118,45 @@ fun MainScreen(navController: NavHostController) {
                     actionIconContentColor = MaterialTheme.colorScheme.secondary
 
                 ))
-            if (isLoading.value){
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()){
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.onPrimary)
+            if (postList.isEmpty()){
+                Column(modifier = Modifier.weight(1f).fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Henüz Gönderi Yok", color = MaterialTheme.colorScheme.secondary)
                 }
+            }
+            else{
+                if (isLoading.value){
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()){
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.onPrimary)
+                    }
 
-            }else{
-                LazyColumn(modifier = Modifier.weight(1f)){
+                }else{
+                    LazyColumn(modifier = Modifier.weight(1f)){
 
-                    items(postList.size){index ->
-                        val postData = postList[index]
+                        items(postList.size){index ->
+                            val postData = postList[index]
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(3.dp)
-                            .background(
-                                MaterialTheme.colorScheme.onPrimary,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .clip(RoundedCornerShape(10.dp))
-                            , verticalArrangement = Arrangement.Center) {
-                            Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp )
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(3.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.onPrimary,
+                                    RoundedCornerShape(10.dp)
+                                )
+                                .clip(RoundedCornerShape(10.dp))
+                                , verticalArrangement = Arrangement.Center) {
+                                Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp )
 
-                            Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp)
+                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp)
+
+                            }
 
                         }
-
                     }
                 }
             }
+
 
 
             Column (verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
