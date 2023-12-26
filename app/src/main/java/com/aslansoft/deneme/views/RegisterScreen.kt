@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +54,7 @@ fun RegisterScreen(navController: NavHostController) {
     val auth = Firebase.auth
 
 
-    val backgroundColor = Color(3, 3, 70, 255)
-    Surface(Modifier.fillMaxSize(), color = backgroundColor) {
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary) {
         val userEmail = remember {
             mutableStateOf("")
         }
@@ -84,7 +84,7 @@ fun RegisterScreen(navController: NavHostController) {
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .height(150.dp), contentAlignment = Alignment.Center){
-                Image(bitmap = ImageBitmap.imageResource(R.drawable.iconbg), contentDescription = null )
+                Image(bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null )
             }
             Box(modifier = Modifier
                 .height(50.dp)
@@ -98,33 +98,45 @@ fun RegisterScreen(navController: NavHostController) {
                 ,label = { Text(text = "Kullanıcı Adı")},
                 colors= OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.LightGray,
-                    focusedBorderColor = Color.White,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
                     unfocusedTextColor = Color.White,
                     focusedTextColor = Color.White,
-                    disabledLabelColor = Color.White,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White)
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary)
                 )
                 println(username.value)
             OutlinedTextField(value = userEmail.value, onValueChange = {
                 userEmail.value = it
-            }, label = { Text(text = "E-Posta", color = Color.White) },
+            }, label = { Text(text = "E-Posta") },
                 placeholder = { Text(text = "username@example.com")},
                 singleLine = true, colors = outlinedTextFieldColors(
-                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = Color.White,
                     focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary
             )
             )
             OutlinedTextField(value = password.value, onValueChange = {
                 password.value = it
-            }, label = { Text(text = "Parola",color = Color.White) },
+            }, label = { Text(text = "Parola") },
                 singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.LightGray,
-                unfocusedTextColor = Color.White,
-                focusedTextColor = Color.White
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.White,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary
             ), visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
                     if (passwordVisibility.value == true){
@@ -143,12 +155,17 @@ fun RegisterScreen(navController: NavHostController) {
 
             OutlinedTextField(value = accessPassword.value, onValueChange = {
                 accessPassword.value = it
-            }, label = { Text(text = "Parola Doğrula",color = Color.White) },
+            }, label = { Text(text = "Parola Doğrula") },
                 singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
                     unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White
+                    focusedTextColor = Color.White,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary
                 ), visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
                     if (accessPasswordVisibility.value == true){
@@ -182,7 +199,8 @@ fun RegisterScreen(navController: NavHostController) {
                                             println("başarılı")
                                             val data = hashMapOf(
                                                 "username" to username.value,
-                                                "email" to userEmail.value
+                                                "email" to userEmail.value,
+                                                "profilePhoto" to ""
                                             )
                                             Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
                                             db.collection("users").document(userEmail.value).set(data)

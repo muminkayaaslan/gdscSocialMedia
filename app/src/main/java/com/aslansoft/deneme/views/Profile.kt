@@ -1,5 +1,6 @@
 package com.aslansoft.deneme.views
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -96,44 +98,43 @@ fun ProfileScreen(navController: NavHostController) {
         val time = remember { mutableStateOf<Timestamp?>(null) }
         val isLoading= remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
-        val profilePhotoLoad = remember { mutableStateOf(false) }
+        val context = LocalContext.current
 
         currentUser?.email?.let {
-            profilePhotoLoad.value = true
+
             db.collection("users").document(it).get().addOnSuccessListener {
                 val data = it.data
                 username.value = data?.get("username") as? String ?: ""
                 profilePhoto.value = data?.get("profilePhoto") as? String ?: ""
             }
         }
-        LaunchedEffect(username.value){
+        LaunchedEffect(username.value) {
+            isLoading.value = true
+            db.collection("posts")
+                .whereEqualTo("username", username.value)
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    myPostList.clear() // Clear the list before adding new data
+                    for (document in documents) {
+                        val postData: Map<String, Any> = document.data
+                        val currentPost = postData["post"].toString()
+                        val currentDate = postData["date"] as Timestamp?
 
-            db.collection("posts").
-            whereEqualTo("username",username.value).
-            orderBy("date",Query.Direction.DESCENDING).
-                get().
-            addOnSuccessListener { documents ->
-                for (document in documents){
-                    val postData: Map<String,Any> = document.data
-                    val currentPost = postData["post"].toString()
-                    val currentDate = postData["date"] as Timestamp?
-
-                    if (currentDate != null) {
-                        post.value = currentPost
-                        time.value = currentDate
-
-                        val myPost = MyPost(currentPost, currentDate)
-                        myPostList.add(myPost)
-                        isLoading.value = false
-                    }
-                    println(postData.toString())
+                        if (currentDate != null) {
+                            val myPost = MyPost(currentPost, currentDate)
+                            myPostList.add(myPost)
+                        }
                     }
 
-                }.addOnFailureListener{
-                println("Veri hatası:" + it.message)
-            }
-
-
+                    isLoading.value = false
+                }
+                .addOnFailureListener {
+                    println("Veri hatası:" + it.message)
+                    isLoading.value = false
+                    Toast.makeText(context,it.message,Toast.LENGTH_LONG).show()
+                // Set to true in case of failure
+                }
         }
         val painter = rememberImagePainter( data = profilePhoto.value,
             builder = {
@@ -170,18 +171,26 @@ fun ProfileScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .height(150.dp)
                 .align(Alignment.CenterHorizontally)){
-                if (profilePhoto.value != null){
-                    Image(modifier = Modifier.fillMaxSize(),painter = painter , contentDescription = null )
-                }else{
-                    Image(modifier = Modifier.fillMaxSize(),imageVector = Icons.Filled.AccountCircle, contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
-
+                if (profilePhoto.value.isNotEmpty() && profilePhoto.value != null) {
+                    Image(
+                        modifier = Modifier.fillMaxSize(),
+                        painter = painter,
+                        contentDescription = null
+                    )
+                } else {
+                    Image(
+                        modifier = Modifier.fillMaxSize(),
+                        imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                    )
                 }
             }
 
             Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.secondary)
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(30.dp))
-            if (myPostList.isEmpty()){
+            if (myPostList.isEmpty() && !isLoading.value){
                 if (isLoading.value) {
                     Box(
                         modifier = Modifier
@@ -195,13 +204,11 @@ fun ProfileScreen(navController: NavHostController) {
                         )
                     }
                 } else {
-                    Column(
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
                             .weight(1f)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Henüz Gönderi Yok",
@@ -230,9 +237,15 @@ fun ProfileScreen(navController: NavHostController) {
                                 val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
                                 val formattedDate = format.format(dateData)
                                 Row (modifier = Modifier.fillMaxWidth()){
-                                    Image(modifier = Modifier
-                                        .size(25.dp)
-                                        .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
+                                    if (profilePhoto.value != null){
+                                        Image(modifier = Modifier
+                                            .size(25.dp)
+                                            .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
+                                    }
+                                    else {
+                                        Image(modifier = Modifier.size(25.dp).padding(start = 3.dp, top = 3.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null)
+                                    }
+
                                     Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
 
                                 }
@@ -292,7 +305,7 @@ fun ProfileScreen(navController: NavHostController) {
                             .clickable {
                                 bottomSheetIsOpen = false
                                 Firebase.auth.signOut()
-                                navController.navigate("input_screen")
+                                navController.navigate("login_screen")
                             }){
                         Spacer(modifier = Modifier.padding(10.dp))
                         Image(modifier = Modifier

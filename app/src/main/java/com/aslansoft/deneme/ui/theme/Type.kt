@@ -34,3 +34,11 @@ val Typography = Typography(
     )
     */
 )
+
+val googleSans = FontFamily(
+    Font(R.font.productsans_bold, FontWeight.Bold),
+    Font(R.font.productsans_black,FontWeight.Black),
+    Font(R.font.productsans_light,FontWeight.Light),
+    Font(R.font.productsans_medium,FontWeight.Medium),
+    Font(R.font.productsans_thin,FontWeight.Thin),
+)

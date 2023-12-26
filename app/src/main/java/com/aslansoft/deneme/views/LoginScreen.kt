@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -42,18 +43,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
+import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    val backgroundColor = Color(3, 3, 70, 255)
-    Surface(color = backgroundColor) {
+    Surface(color = MaterialTheme.colorScheme.primary) {
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(400.dp), contentAlignment = Alignment.Center){
-            Image(modifier = Modifier.padding(50.dp),bitmap = ImageBitmap.imageResource(R.drawable.iconbg), contentDescription = null )
+            Image(modifier = Modifier.padding(50.dp),bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null )
         }
         Column(Modifier.fillMaxSize(),Arrangement.Center,Alignment.CenterHorizontally) {
             var userEmail by remember {
@@ -68,17 +69,19 @@ fun LoginScreen(navController: NavHostController) {
             OutlinedTextField(value = userEmail, onValueChange ={
                 userEmail = it
 
-            } , label = { Text(text = "E-Posta")},
-                placeholder = { Text(text = "username@example.com")},
+            } , label = { Text(text = "E-Posta", fontFamily = googleSans)},
+                placeholder = { Text(text = "username@example.com",fontFamily = googleSans)},
                 
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White,
-                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.LightGray,
-                    unfocusedPlaceholderColor = Color.LightGray
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.White,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email))
             Spacer(modifier = Modifier.padding(5.dp))
@@ -87,14 +90,17 @@ fun LoginScreen(navController: NavHostController) {
             }
             OutlinedTextField(value = password, onValueChange ={
                 password = it
-            },label = { Text(text = "Parola")},
+            },label = { Text(text = "Parola",fontFamily = googleSans)},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    unfocusedLabelColor = Color.White,
-                    focusedLabelColor = Color.White,
-                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = Color.White,
                     focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedLabelColor = Color.White,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
@@ -125,16 +131,17 @@ fun LoginScreen(navController: NavHostController) {
                 Toast.makeText(context,"Gerekli Alanları Doldurun", Toast.LENGTH_SHORT).show()
             }
             }) {
-                Text(text = "Giriş Yap",color = Color.White)
+                Text(text = "Giriş Yap",color = Color.White,fontFamily = googleSans)
             }
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Row (modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp), horizontalArrangement = Arrangement.Center){
-                Text("Hesabın Yok Mu?", color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp)
+                Text("Hesabın Yok Mu?", color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp,fontFamily = googleSans)
+                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                 Text(modifier = Modifier.clickable {
                                                    navController.navigate("register_screen")
-                },text = "Kaydol", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp)
+                },text = "Kaydol", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp,fontFamily = googleSans)
             }
 
         }
