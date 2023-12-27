@@ -1,4 +1,4 @@
-# denemeodevi
-## mkysln
+# GDSC YOBU SOCIAL MEDIA
+## Designed by ASLAN SOFTWARE(Mümin KAYAASLAN)
 
 ---
