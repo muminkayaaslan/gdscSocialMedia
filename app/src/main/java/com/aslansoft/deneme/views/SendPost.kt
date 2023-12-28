@@ -1,6 +1,7 @@
 package com.aslansoft.deneme.views
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -63,11 +64,14 @@ fun SendPostScreen(navController: NavHostController) {
                     post.value = it
 
             }, placeholder = { Text(text = "Durum Paylaş...", color = Color.LightGray, fontFamily = googleSans)}, maxLines = 2,singleLine = false, colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                cursorColor = MaterialTheme.colorScheme.secondary,
-                focusedTextColor = MaterialTheme.colorScheme.secondary,
-                unfocusedTextColor = MaterialTheme.colorScheme.secondary
+                unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                cursorColor = MaterialTheme.colorScheme.onPrimary,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
             ))
             Spacer(modifier = Modifier.padding(10.dp))
             OutlinedButton(onClick = {
@@ -78,8 +82,8 @@ fun SendPostScreen(navController: NavHostController) {
                     println(it.localizedMessage)
                     Toast.makeText(context,"Gönderi paylaşırken bir hata oluştu",Toast.LENGTH_LONG).show()
                 }
-            }) {
-                Text(text = "Paylaş", color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+            }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {
+                Text(text = "Paylaş", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
             }
         }
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -120,7 +121,9 @@ fun MainScreen(navController: NavHostController) {
 
                 ))
             if (postList.isEmpty()){
-                Column(modifier = Modifier.weight(1f).fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "Henüz Gönderi Yok", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                 }
             }
@@ -134,7 +137,9 @@ fun MainScreen(navController: NavHostController) {
 
                 }else{
                     LazyColumn(modifier = Modifier.weight(1f)){
-
+                        item { 
+                            Spacer(modifier = Modifier.padding(vertical = 3.dp))
+                        }
                         items(postList.size){index ->
                             val postData = postList[index]
 
@@ -208,19 +213,37 @@ fun MainBottomBar(navController: NavHostController?) {
         )
 
 
-        Button(modifier = Modifier
-            .size(80.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = CircleShape
-            ),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = Color.White),
-            onClick = { navController?.
-            navigate("post_screen")
-            }) {
-            Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
-                contentDescription = null)
+        val googleBlue = Color(99, 154, 245, 255)
+        if (isSystemInDarkTheme()){
+            Button(modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = Color.White),
+                onClick = { navController?.
+                navigate("post_screen")
+                }) {
+                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
+                    contentDescription = null)
+            }
+        }else{
+            Button(modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = googleBlue,
+                    contentColor = Color.White),
+                onClick = { navController?.
+                navigate("post_screen")
+                }) {
+                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
+                    contentDescription = null)
+            }
         }
 
 
@@ -241,21 +264,3 @@ fun MainBottomBar(navController: NavHostController?) {
 
 }
 
-@Composable
-fun SimpleLineDivider() {
-    if (isSystemInDarkTheme()){
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(0.5.dp), color = Color.Gray
-        )
-    }
-    else{
-        Divider(
-            Modifier
-                .fillMaxWidth()
-                .height(0.5.dp), color = Color.White
-        )
-    }
-
-}

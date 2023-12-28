@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
@@ -195,30 +197,41 @@ fun ProfileEditScreen(navController: NavHostController) {
                     newUsername.value = it
                 },
                     trailingIcon = {
-                                   Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
+                                   Icon(imageVector = Icons.Filled.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                     },
                     label = { Text(text = "Kullanıcı Adı", fontFamily = googleSans)},
                     placeholder = { Text(text = username.value)},
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color.Gray,
-                        focusedBorderColor = MaterialTheme.colorScheme.background,
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
                         focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        selectionColors = TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onPrimary,
+                            backgroundColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        cursorColor = MaterialTheme.colorScheme.onPrimary
                     ))
                 OutlinedTextField(value = password.value, onValueChange ={
                     password.value = it
                 },label = { Text(text = "Yeni Parola", fontFamily = googleSans)},
                     colors = OutlinedTextFieldDefaults.
                     colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.White,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        selectionColors = TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onPrimary,
+                            backgroundColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        cursorColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
@@ -227,12 +240,12 @@ fun ProfileEditScreen(navController: NavHostController) {
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.secondary))
+                                MaterialTheme.colorScheme.onPrimary))
                         }else{
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.secondary) )
+                                MaterialTheme.colorScheme.onPrimary) )
                         }
 
                     }
@@ -241,12 +254,18 @@ fun ProfileEditScreen(navController: NavHostController) {
                     newPassword.value = it
                 },label = { Text(text = "Yeni Parola Tekrar", fontFamily = googleSans)},
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.White,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        selectionColors = TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onPrimary,
+                            backgroundColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        cursorColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
@@ -255,12 +274,12 @@ fun ProfileEditScreen(navController: NavHostController) {
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.secondary))
+                                MaterialTheme.colorScheme.onPrimary))
                         }else{
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.secondary) )
+                                MaterialTheme.colorScheme.onPrimary) )
                         }
 
                     }

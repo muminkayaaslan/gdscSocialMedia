@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -288,7 +289,9 @@ fun ProfileScreen(navController: NavHostController) {
                         Spacer(modifier = Modifier.padding(10.dp))
                         Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Filled.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Ayarlar", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
+                        Text(modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = 5.dp),text = "Ayarlar", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(modifier = Modifier.padding(3.dp))
@@ -302,7 +305,9 @@ fun ProfileScreen(navController: NavHostController) {
                         Spacer(modifier = Modifier.padding(10.dp))
                         Image(modifier =  Modifier.fillMaxHeight(),imageVector = Icons.Filled.AccountCircle, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Profili Düzenle", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
+                        Text(modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = 5.dp),text = "Profili Düzenle", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(modifier = Modifier.padding(vertical =  20.dp))
@@ -325,7 +330,9 @@ fun ProfileScreen(navController: NavHostController) {
                             colorFilter = ColorFilter.tint(color = Color.Red)
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Çıkış Yap", color = Color.Red, fontFamily = googleSans)
+                        Text(modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(top = 5.dp),text = "Çıkış Yap", color = Color.Red, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(Modifier.padding(15.dp))
@@ -372,21 +379,39 @@ fun ProfileBottomBar(navController: NavHostController?) {
                     indicatorColor = Color.Transparent)
         )
 
-
-        Button(modifier = Modifier
-            .size(80.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = CircleShape
-            ),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = Color.White),
-            onClick = { navController?.
-            navigate("post_screen")
-            }) {
-            Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
-                contentDescription = null)
+        val googleBlue = Color(99, 154, 245, 255)
+        if (isSystemInDarkTheme()){
+            Button(modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = Color.White),
+                onClick = { navController?.
+                navigate("post_screen")
+                }) {
+                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
+                    contentDescription = null)
+            }
+        }else{
+            Button(modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = googleBlue,
+                    contentColor = Color.White),
+                onClick = { navController?.
+                navigate("post_screen")
+                }) {
+                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
+                    contentDescription = null)
+            }
         }
+
 
 
         //Profil ekranına yönlendiren buton
