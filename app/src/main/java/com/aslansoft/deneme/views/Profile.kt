@@ -242,7 +242,7 @@ fun ProfileScreen(navController: NavHostController) {
                                 val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
                                 val formattedDate = format.format(dateData)
                                 Row (modifier = Modifier.fillMaxWidth()){
-                                    if (profilePhoto.value != null){
+                                    if (profilePhoto.value.isNotEmpty()){
                                         Image(modifier = Modifier
                                             .size(25.dp)
                                             .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
@@ -250,10 +250,10 @@ fun ProfileScreen(navController: NavHostController) {
                                     else {
                                         Image(modifier = Modifier
                                             .size(25.dp)
-                                            .padding(start = 3.dp, top = 3.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null)
+                                            .padding(start = 3.dp, top = 3.dp, bottom = 2.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary))
                                     }
 
-                                    Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
+                                    Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp, top = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
 
                                 }
                                 Row (modifier = Modifier
@@ -261,7 +261,6 @@ fun ProfileScreen(navController: NavHostController) {
                                     .padding(start = 10.dp, bottom = 3.dp)){
                                     Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
 
-                                    Image(modifier = Modifier.size(50.dp).align(Alignment.CenterVertically),bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null)
                                     Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
 
                                         Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
