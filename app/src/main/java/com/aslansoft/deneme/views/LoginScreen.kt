@@ -3,8 +3,11 @@
 package com.aslansoft.deneme.views
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -24,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +52,7 @@ import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -56,7 +62,9 @@ fun LoginScreen(navController: NavHostController) {
             .height(400.dp), contentAlignment = Alignment.Center){
             Image(modifier = Modifier.padding(50.dp),bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null )
         }
+
         Column(Modifier.fillMaxSize(),Arrangement.Center,Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.padding(top = 30.dp))
             var userEmail by remember {
                 mutableStateOf("")
             }
@@ -71,18 +79,18 @@ fun LoginScreen(navController: NavHostController) {
 
             } , label = { Text(text = "E-Posta", fontFamily = googleSans)},
                 placeholder = { Text(text = "username@example.com",fontFamily = googleSans)},
-                
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
                     disabledLabelColor = Color.LightGray,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                     selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
                     cursorColor = MaterialTheme.colorScheme.onPrimary
                 ),
+                singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email))
             Spacer(modifier = Modifier.padding(5.dp))
             val passwordVisibility = remember {
@@ -92,16 +100,17 @@ fun LoginScreen(navController: NavHostController) {
                 password = it
             },label = { Text(text = "Parola",fontFamily = googleSans)},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
                     disabledLabelColor = Color.LightGray,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
-                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.onBackground),
                     cursorColor = MaterialTheme.colorScheme.onPrimary
                 ),
+                singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -109,12 +118,12 @@ fun LoginScreen(navController: NavHostController) {
                         Image(modifier = Modifier
                             .size(20.dp)
                             .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
-                            MaterialTheme.colorScheme.secondary))
+                            MaterialTheme.colorScheme.onPrimary))
                     }else{
                         Image(modifier = Modifier
                             .size(20.dp)
                             .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
-                            MaterialTheme.colorScheme.secondary) )
+                            MaterialTheme.colorScheme.onPrimary))
                     }
 
                 }
@@ -122,7 +131,15 @@ fun LoginScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.padding(5.dp))
             OutlinedButton(onClick = { if (userEmail.isNotEmpty() && password.isNotEmpty()){
                 auth.signInWithEmailAndPassword(userEmail,password).addOnSuccessListener {
-                    navController.navigate("main_screen")
+                    val user = auth.currentUser
+                    if (user != null && user.isEmailVerified){
+
+
+                        navController.navigate("main_screen", )
+                    }else{
+                        Toast.makeText(context,"Lütfen E-postanızı Doğrulayın",Toast.LENGTH_SHORT).show()
+                    }
+
 
                 }.addOnFailureListener{
                     Toast.makeText(context,"Giriş Yapma Başarısız",Toast.LENGTH_SHORT).show()
@@ -130,19 +147,56 @@ fun LoginScreen(navController: NavHostController) {
             }else{
                 Toast.makeText(context,"Gerekli Alanları Doldurun", Toast.LENGTH_SHORT).show()
             }
-            }) {
-                Text(text = "Giriş Yap",color = Color.White,fontFamily = googleSans)
+            }, border = BorderStroke(color = MaterialTheme.colorScheme.onBackground, width = 1.dp)) {
+                Text(text = "Giriş Yap",color = MaterialTheme.colorScheme.onPrimary,fontFamily = googleSans)
             }
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            Text(modifier = Modifier.clickable {
+                if (userEmail.isNotEmpty()) {
+                    auth.sendPasswordResetEmail(userEmail).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(context, "Parola Sıfırlama E-Postası Gönderildi", Toast.LENGTH_SHORT).show()
+                        } else {
+                            println(task.exception)
+                            Toast.makeText(context, "E-posta Gönderilemedi", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(context, "Sıfırlamak İstediğiniz Mail Adresini Giriniz", Toast.LENGTH_SHORT).show()
+                }
+
+            },text = "Parola Sıfırla", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp,fontFamily = googleSans)
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Row (modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp), horizontalArrangement = Arrangement.Center){
-                Text("Hesabın Yok Mu?", color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp,fontFamily = googleSans)
+                if (isSystemInDarkTheme()){
+                    Text("Hesabın Yok Mu?", color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp,fontFamily = googleSans)
+                }
+                else
+                {
+                    Text("Hesabın Yok Mu?", color = Color.Gray, fontSize = 15.sp,fontFamily = googleSans)
+                }
+
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                 Text(modifier = Modifier.clickable {
                                                    navController.navigate("register_screen")
                 },text = "Kaydol", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp,fontFamily = googleSans)
             }
+            Spacer(modifier = Modifier.padding(vertical = 2.dp))
+            Text(modifier = Modifier.clickable {
+                auth.currentUser?.sendEmailVerification()?.addOnCompleteListener{verificationTask ->
+                    if (verificationTask.isSuccessful){
+                        Toast.makeText(context,"Doğrulama E-postası Gönderildi",Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(context,"Doğrulama E-postası Gönderilemedi",Toast.LENGTH_SHORT).show()
+
+                    }
+
+
+                }
+            },text = "Doğrulama E-postası Gönder", color = MaterialTheme.colorScheme.onPrimary, fontSize = 15.sp,fontFamily = googleSans)
+
 
         }
     }

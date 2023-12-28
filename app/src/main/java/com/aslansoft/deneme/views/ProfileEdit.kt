@@ -29,10 +29,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,7 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,9 +48,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
+import com.aslansoft.deneme.ui.theme.googleSans
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -81,17 +83,19 @@ fun ProfileEditScreen(navController: NavHostController) {
             mutableStateOf(false)
         }
         val downloadUrl = remember { mutableStateOf<String?>(null) }
-        val photoSelected = remember {
-            mutableStateOf(false)
-        }
+
 
 
 
         Column(modifier = Modifier.fillMaxSize()) {
-            currentUser?.email?.let {
-                db.collection("users").document(it).get().addOnSuccessListener {
-                    val data = it.data
-                    username.value = data?.get("username") as? String ?: ""
+            LaunchedEffect(downloadUrl.value){
+                currentUser?.email?.let {
+                    db.collection("users").document(it).get().addOnSuccessListener { document ->
+                        val data = document.data
+                        username.value = data?.get("username") as? String ?: ""
+                        val profilePhotoUrl = data?.get("profilePhoto") as? String
+                        profilePhoto.value = profilePhotoUrl ?: ""
+                    }
                 }
             }
             val pickPhotoLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
@@ -120,17 +124,15 @@ fun ProfileEditScreen(navController: NavHostController) {
                         }
                 }
             }
-            currentUser?.email?.let { db.collection("users").document(it).get().addOnSuccessListener {
-                val data = it.data
-                profilePhoto.value = data?.get("profilePhoto") as String ?: ""
 
-            } }
 
-            val painter = rememberImagePainter(data = profilePhoto.value,
-                builder = {
-                    crossfade(true)
-                    transformations(CircleCropTransformation())
-                })
+            val painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value)
+                    .apply(block = fun ImageRequest.Builder.() {
+                        crossfade(true)
+                        transformations(CircleCropTransformation())
+                    }).build()
+            )
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
                 .clip(RoundedCornerShape(10.dp)),
@@ -162,7 +164,16 @@ fun ProfileEditScreen(navController: NavHostController) {
                     )
                     .clip(RoundedCornerShape(30.dp))
             ) {
-                if (downloadUrl.value != null){
+                if (profilePhoto.value.isNotEmpty()){
+
+                    Image(modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .clickable {
+                            pickPhotoLauncher.launch("image/*")
+                        },painter = painter, contentDescription = "profilePhoto")
+                }
+                else{
                     Image(
                         modifier = Modifier
                             .fillMaxSize()
@@ -175,14 +186,6 @@ fun ProfileEditScreen(navController: NavHostController) {
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
                     )
                 }
-                else{
-                    Image(modifier = Modifier
-                        .align(Alignment.Center)
-                        .clickable {
-                            pickPhotoLauncher.launch("image/*")
-                        },painter = painter, contentDescription = "profilePhoto")
-                }
-
             }
             Column(modifier = Modifier
                 .weight(1f)
@@ -194,11 +197,11 @@ fun ProfileEditScreen(navController: NavHostController) {
                     trailingIcon = {
                                    Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
                     },
-                    label = { Text(text = "Kullanıcı Adı")},
+                    label = { Text(text = "Kullanıcı Adı", fontFamily = googleSans)},
                     placeholder = { Text(text = username.value)},
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.Gray,
-                        focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                        focusedBorderColor = MaterialTheme.colorScheme.background,
                         focusedTextColor = MaterialTheme.colorScheme.secondary,
                         unfocusedTextColor = MaterialTheme.colorScheme.secondary,
                         focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
@@ -207,7 +210,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                     ))
                 OutlinedTextField(value = password.value, onValueChange ={
                     password.value = it
-                },label = { Text(text = "Parola")},
+                },label = { Text(text = "Yeni Parola", fontFamily = googleSans)},
                     colors = OutlinedTextFieldDefaults.
                     colors(
                         focusedTextColor = Color.White,
@@ -220,7 +223,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        if (passwordVisibility.value == true){
+                        if (passwordVisibility.value){
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
@@ -236,19 +239,19 @@ fun ProfileEditScreen(navController: NavHostController) {
                 )
                 OutlinedTextField(value = newPassword.value, onValueChange ={
                     newPassword.value = it
-                },label = { Text(text = "Yeni Parola")},
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedLabelColor = Color.White,
-                        focusedLabelColor = Color.White,
+                },label = { Text(text = "Yeni Parola Tekrar", fontFamily = googleSans)},
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.LightGray,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        focusedLabelColor = Color.White,
+                        unfocusedLabelColor = Color.White,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        if (passwordVisibility.value == true){
+                        if (passwordVisibility.value){
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
@@ -272,12 +275,82 @@ fun ProfileEditScreen(navController: NavHostController) {
                     RoundedCornerShape(10.dp)
                 )
                 ,
-                onClick = { /*TODO*/ },
+                onClick = {
+                          if(newUsername.value.isNotEmpty() || newPassword.value.isNotEmpty()){
+                              if(newUsername.value.isNotEmpty()){
+                                  val usernameUpdate = hashMapOf("username" to newUsername.value)
+                                  if (currentUser != null) {
+                                      currentUser.email?.let { db.collection("users")
+                                          .document(it)
+                                          .update(usernameUpdate as Map<String, Any>)
+                                          .addOnSuccessListener {
+                                          Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
+                                              navController.navigate("main_screen")
+                                      }
+                                          .addOnFailureListener {exception ->
+                                              println(exception.message)
+                                              Toast.makeText(context,"Kullanıcı Adı Değiştirilirken Hata Oluştu",Toast.LENGTH_SHORT).show()
+                                          }
+                                      }
+                                  }
+                              } else if(newPassword.value.isNotEmpty()){
+                                  if (password.value == newPassword.value){
+
+                                      val credential = currentUser?.email?.let { EmailAuthProvider.getCredential(it, password.value) }
+                                      if (currentUser != null && credential != null){
+                                          auth.currentUser?.updatePassword(newPassword.value)?.addOnSuccessListener {
+                                              Toast.makeText(context,"Parola Başarı ile Güncellendi",Toast.LENGTH_SHORT).show()
+                                          }?.addOnFailureListener {
+                                              Toast.makeText(context,"Parola Değiştirilemedi", Toast.LENGTH_SHORT).show()
+                                              println(it.message + "password change error")
+                                          }
+                                      }
+
+                                  }else{
+                                      Toast.makeText(context,"Parolalar Eşleşmiyor",Toast.LENGTH_SHORT).show()
+                                  }
+
+                              }
+                              else if (newUsername.value.isNotEmpty() && newPassword.value.isNotEmpty()){
+
+                                  if (password.value == newPassword.value){
+
+                                      val credential = currentUser?.email?.let { EmailAuthProvider.getCredential(it, password.value) }
+                                      if (currentUser != null && credential != null){
+                                          auth.currentUser?.updatePassword(newPassword.value)?.addOnSuccessListener {
+                                              Toast.makeText(context,"Parola Başarı ile Güncellendi",Toast.LENGTH_SHORT).show()
+                                          }?.addOnFailureListener {
+                                              Toast.makeText(context,"Parola Değiştirilemedi", Toast.LENGTH_SHORT).show()
+                                              println(it.message + "password change error")
+                                          }
+                                      }
+                                      val usernameUpdate = hashMapOf("username" to newUsername.value)
+                                      if (currentUser != null) {
+                                          currentUser.email?.let { db.collection("users")
+                                              .document(it)
+                                              .update(usernameUpdate as Map<String, Any>)
+                                              .addOnSuccessListener {
+                                                  Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
+                                                  navController.navigate("main_screen")
+                                              }
+                                              .addOnFailureListener { exception ->
+                                                  println(exception.message)
+                                                  Toast.makeText(context,"Kullanıcı Adı Değiştirilirken Hata Oluştu",Toast.LENGTH_SHORT).show()
+                                              }
+                                          }
+                                      }
+                                  }else{
+                                      Toast.makeText(context,"Parolalar Eşleşmiyor",Toast.LENGTH_SHORT).show()
+                                  }
+
+                              }
+                          }
+                },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     containerColor = MaterialTheme.colorScheme.onPrimary
                 )) {
-                Text(text = "KAYDET",color = MaterialTheme.colorScheme.secondary)
+                Text(text = "KAYDET",color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
             }
         }
     }

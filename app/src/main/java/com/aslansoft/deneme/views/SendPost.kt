@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -61,7 +62,7 @@ fun SendPostScreen(navController: NavHostController) {
             OutlinedTextField(value = post.value, onValueChange = {
                     post.value = it
 
-            }, placeholder = { Text(text = "Durum Paylaş...", color = Color.LightGray)}, maxLines = 2,singleLine = false, colors = OutlinedTextFieldDefaults.colors(
+            }, placeholder = { Text(text = "Durum Paylaş...", color = Color.LightGray, fontFamily = googleSans)}, maxLines = 2,singleLine = false, colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.LightGray,
                 focusedBorderColor = MaterialTheme.colorScheme.secondary,
                 cursorColor = MaterialTheme.colorScheme.secondary,
@@ -78,7 +79,7 @@ fun SendPostScreen(navController: NavHostController) {
                     Toast.makeText(context,"Gönderi paylaşırken bir hata oluştu",Toast.LENGTH_LONG).show()
                 }
             }) {
-                Text(text = "Paylaş", color = MaterialTheme.colorScheme.secondary)
+                Text(text = "Paylaş", color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
             }
         }
 

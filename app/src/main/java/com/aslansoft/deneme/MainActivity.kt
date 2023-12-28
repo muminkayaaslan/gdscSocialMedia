@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,19 +36,19 @@ import com.google.firebase.ktx.Firebase
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         FirebaseApp.initializeApp(this)
         setContent {
             DenemeTheme {
 
-
                 val systemUiController = rememberSystemUiController()
                 if(isSystemInDarkTheme()){
                     systemUiController.setSystemBarsColor(
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }else{
                     systemUiController.setSystemBarsColor(
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 val db = Firebase.firestore

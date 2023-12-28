@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -106,7 +107,7 @@ fun MainScreen(navController: NavHostController) {
                 ),
                 title = { Text(modifier = Modifier.
                 padding(top = 12.dp),
-                    text = "Ana Sayfa")}
+                    text = "Ana Sayfa", fontFamily = googleSans)}
                 , actions = {
                     Icon(modifier = Modifier
                         .size(40.dp)
@@ -120,7 +121,7 @@ fun MainScreen(navController: NavHostController) {
                 ))
             if (postList.isEmpty()){
                 Column(modifier = Modifier.weight(1f).fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Henüz Gönderi Yok", color = MaterialTheme.colorScheme.secondary)
+                    Text(text = "Henüz Gönderi Yok", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                 }
             }
             else{
@@ -146,9 +147,9 @@ fun MainScreen(navController: NavHostController) {
                                 )
                                 .clip(RoundedCornerShape(10.dp))
                                 , verticalArrangement = Arrangement.Center) {
-                                Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp )
+                                Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
 
-                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp)
+                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
 
                             }
 

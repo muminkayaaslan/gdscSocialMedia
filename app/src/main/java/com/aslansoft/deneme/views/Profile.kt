@@ -63,9 +63,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
+import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
@@ -136,11 +139,12 @@ fun ProfileScreen(navController: NavHostController) {
                 // Set to true in case of failure
                 }
         }
-        val painter = rememberImagePainter( data = profilePhoto.value,
-            builder = {
+        val painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value).apply(block = fun ImageRequest.Builder.() {
                 crossfade(true)
                 transformations(CircleCropTransformation())
-            })
+            }).build()
+        )
 
 
         Column(modifier = Modifier
@@ -151,7 +155,8 @@ fun ProfileScreen(navController: NavHostController) {
                 .clip(RoundedCornerShape(10.dp)),
                 title = { Text(modifier = Modifier.
                 padding(top = 12.dp),
-                    text = "Profil")}
+                    text = "Profil", fontFamily = googleSans
+                )}
                 , actions = {
                     Icon(modifier = Modifier
                         .size(40.dp)
@@ -187,7 +192,7 @@ fun ProfileScreen(navController: NavHostController) {
                 }
             }
 
-            Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.secondary)
+            Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(30.dp))
             if (myPostList.isEmpty() && !isLoading.value){
@@ -212,7 +217,7 @@ fun ProfileScreen(navController: NavHostController) {
                     ) {
                         Text(
                             text = "Henüz Gönderi Yok",
-                            color = MaterialTheme.colorScheme.secondary
+                            color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans
                         )
                     }
                 }
@@ -243,18 +248,23 @@ fun ProfileScreen(navController: NavHostController) {
                                             .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
                                     }
                                     else {
-                                        Image(modifier = Modifier.size(25.dp).padding(start = 3.dp, top = 3.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null)
+                                        Image(modifier = Modifier
+                                            .size(25.dp)
+                                            .padding(start = 3.dp, top = 3.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null)
                                     }
 
-                                    Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                                    Text(modifier = Modifier.padding(start = 10.dp, bottom = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
 
                                 }
                                 Row (modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 10.dp, bottom = 3.dp)){
-                                    Text(text = postData.post, color = MaterialTheme.colorScheme.secondary)
+                                    Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+
+                                    Image(modifier = Modifier.size(50.dp).align(Alignment.CenterVertically),bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null)
                                     Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
-                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp )
+
+                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
                                     }
                                 }
                             }
@@ -277,9 +287,9 @@ fun ProfileScreen(navController: NavHostController) {
                             navController.navigate("setting_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Filled.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary))
+                        Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Filled.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight(),text = "Ayarlar", color = MaterialTheme.colorScheme.secondary)
+                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Ayarlar", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(modifier = Modifier.padding(3.dp))
@@ -291,9 +301,9 @@ fun ProfileScreen(navController: NavHostController) {
                             navController.navigate("profileEdit_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Image(modifier =  Modifier.fillMaxHeight(),imageVector = Icons.Filled.AccountCircle, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary))
+                        Image(modifier =  Modifier.fillMaxHeight(),imageVector = Icons.Filled.AccountCircle, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight(),text = "Profili Düzenle", color = MaterialTheme.colorScheme.secondary)
+                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Profili Düzenle", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(modifier = Modifier.padding(vertical =  20.dp))
@@ -316,7 +326,7 @@ fun ProfileScreen(navController: NavHostController) {
                             colorFilter = ColorFilter.tint(color = Color.Red)
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
-                        Text(modifier = Modifier.fillMaxHeight(),text = "Çıkış Yap", color = Color.Red)
+                        Text(modifier = Modifier.fillMaxHeight().padding(top = 5.dp),text = "Çıkış Yap", color = Color.Red, fontFamily = googleSans)
                         Spacer(modifier = Modifier.padding(1.dp))
                     }
                     Spacer(Modifier.padding(15.dp))

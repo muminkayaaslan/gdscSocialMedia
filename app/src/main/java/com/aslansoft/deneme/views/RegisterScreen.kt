@@ -4,6 +4,7 @@ package com.aslansoft.deneme.views
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
+import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -89,64 +93,67 @@ fun RegisterScreen(navController: NavHostController) {
             Box(modifier = Modifier
                 .height(50.dp)
                 .zIndex(1f), contentAlignment = Alignment.Center){
-                Text(text = "Hoşgeldin ${username.value}",color= Color.White, fontSize = 30.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold)
+                Text(text = "Hoşgeldin ${username.value}",color= MaterialTheme.colorScheme.onPrimary, fontSize = 30.sp, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, fontFamily = googleSans)
             }
             Spacer(modifier = Modifier.padding(10.dp))
             OutlinedTextField(value = username.value , onValueChange ={
                 username.value = it
             }, singleLine = true
-                ,label = { Text(text = "Kullanıcı Adı")},
+                ,label = { Text(text = "Kullanıcı Adı", fontFamily = googleSans)},
                 colors= OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
-                    disabledLabelColor = Color.LightGray,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                     selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
-                    cursorColor = MaterialTheme.colorScheme.onPrimary)
+                    cursorColor = MaterialTheme.colorScheme.onPrimary),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 println(username.value)
             OutlinedTextField(value = userEmail.value, onValueChange = {
                 userEmail.value = it
-            }, label = { Text(text = "E-Posta") },
-                placeholder = { Text(text = "username@example.com")},
+            }, label = { Text(text = "E-Posta", fontFamily = googleSans) },
+                placeholder = { Text(text = "username@example.com", fontFamily = googleSans)},
                 singleLine = true, colors = outlinedTextFieldColors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
-                    disabledLabelColor = Color.LightGray,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                     selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
                     cursorColor = MaterialTheme.colorScheme.onPrimary
-            )
+            ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             OutlinedTextField(value = password.value, onValueChange = {
                 password.value = it
-            }, label = { Text(text = "Parola") },
+            }, label = { Text(text = "Parola", fontFamily = googleSans) },
                 singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
-                    disabledLabelColor = Color.LightGray,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                     selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
                     cursorColor = MaterialTheme.colorScheme.onPrimary
-            ), visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
+            ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                , visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
                     if (passwordVisibility.value == true){
                         Image(modifier = Modifier
                             .size(20.dp)
-                            .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+                            .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
                     }else{
                         Image(modifier = Modifier
                             .size(20.dp)
-                            .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
+                            .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary) )
                     }
 
                 }
@@ -155,27 +162,28 @@ fun RegisterScreen(navController: NavHostController) {
 
             OutlinedTextField(value = accessPassword.value, onValueChange = {
                 accessPassword.value = it
-            }, label = { Text(text = "Parola Doğrula") },
+            }, label = { Text(text = "Parola Doğrula", fontFamily = googleSans) },
                 singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
                     focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = Color.White,
-                    focusedTextColor = Color.White,
-                    disabledLabelColor = Color.LightGray,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
                     focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = Color.White,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                     selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
                     cursorColor = MaterialTheme.colorScheme.onPrimary
-                ), visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
+                ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
                     if (accessPasswordVisibility.value == true){
                         Image(modifier = Modifier
                             .size(20.dp)
-                            .clickable { accessPasswordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+                            .clickable { accessPasswordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
                     }else{
                         Image(modifier = Modifier
                             .size(20.dp)
-                            .clickable { accessPasswordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
+                            .clickable { accessPasswordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary) )
                     }
 
                 }
@@ -189,14 +197,23 @@ fun RegisterScreen(navController: NavHostController) {
                 if (userEmail.value.isNotEmpty()  &&  password.value.isNotEmpty() && username.value.isNotEmpty() && accessPassword.value.isNotEmpty()){
                     if(userEmail.value.endsWith("@gmail.com")){
                         if (password.value == accessPassword.value){
+
                             auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->
                                 if (task.isSuccessful){
 
-                                    auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {
+                                    auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {createUser ->
 
-                                        if (it.isSuccessful) {
+                                        if (createUser.isSuccessful) {
                                             // Sign in success, update UI with the signed-in user's information
-                                            println("başarılı")
+                                            val currentUser = auth.currentUser
+                                            currentUser?.sendEmailVerification()?.addOnCompleteListener { verified ->
+                                                if (verified.isSuccessful){
+                                                    Toast.makeText(context,"Doğruala E-postası Gönderildi",Toast.LENGTH_SHORT).show()
+                                                }else{
+                                                    Toast.makeText(context,"E-Posta Gönderilirken Bir Hata Oluştu",Toast.LENGTH_SHORT).show()
+                                                    println("sendEmailVerification:failure" + verified.exception)
+                                                }
+                                            }
                                             val data = hashMapOf(
                                                 "username" to username.value,
                                                 "email" to userEmail.value,
@@ -234,8 +251,8 @@ fun RegisterScreen(navController: NavHostController) {
                 else{
                     Toast.makeText(context,"Gerekli Alanları Doldurmak Zorundasınız", Toast.LENGTH_SHORT).show()
                 }
-            }) {
-                Text(text = "Kayıt Ol", color = Color.White)
+            }, border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onPrimary)) {
+                Text(text = "Kayıt Ol", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
