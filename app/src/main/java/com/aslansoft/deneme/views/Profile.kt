@@ -1,6 +1,7 @@
 package com.aslansoft.deneme.views
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,7 +66,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
@@ -426,7 +426,9 @@ fun ProfileBottomBar(navController: NavHostController?) {
                     unselectedIconColor = MaterialTheme.colorScheme.onBackground,
                     indicatorColor = MaterialTheme.colorScheme.onPrimary))
     }
-
+    BackHandler(true) {
+        navController?.navigateUp()
+    }
 
 }
 

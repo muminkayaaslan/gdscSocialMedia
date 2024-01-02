@@ -2,7 +2,9 @@
 
 package com.aslansoft.deneme.views
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -199,5 +201,10 @@ fun LoginScreen(navController: NavHostController) {
 
 
         }
+        val activity = (LocalContext.current as? Activity)
+    BackHandler(true) {
+        activity?.finish()
     }
+    }
+
 }

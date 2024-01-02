@@ -1,7 +1,8 @@
 package com.aslansoft.deneme.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -75,23 +77,43 @@ fun MessageList(navController: NavHostController) {
                         Modifier
                             .fillMaxWidth()
                             .height(40.dp)
-                            .background(
-                                MaterialTheme.colorScheme.onPrimary,
-                                RoundedCornerShape(10.dp)
-                            )
+                            .clickable {
+                                navController.navigate("chat_screen/${"Denizhan"}")
+                            }
                             .clip(RoundedCornerShape(10.dp)),){
                         Box(modifier = Modifier.size(40.dp)){
                             Image(modifier = Modifier.clip(CircleShape),bitmap = ImageBitmap.imageResource(R.drawable.numan) , contentScale = ContentScale.Crop, contentDescription = "numan")
                         }
-                        Column {
-                            Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "Numan",color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
-                            Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "I'm TransIt", color = MaterialTheme.colorScheme.secondary)
+                        if (isSystemInDarkTheme()){
+                            Column {
+                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "Numan",color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
+                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "I'm TransIt", color = MaterialTheme.colorScheme.secondary)
+                            }
+                        }else{
+                            Column {
+                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "Numan",color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
+                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "I'm TransIt", color = MaterialTheme.colorScheme.onPrimary)
+                            }
                         }
 
+
                     }
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    SimpleLineDivider()
                     Spacer(modifier = Modifier.padding(vertical = 2.dp))
                 }
             }
         }
     }
+}
+
+@Composable
+fun SimpleLineDivider() {
+    if (isSystemInDarkTheme()){
+        Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.3.dp, color = MaterialTheme.colorScheme.secondary)
+    }else
+    {
+        Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.3.dp, color = MaterialTheme.colorScheme.onPrimary)
+    }
+
 }

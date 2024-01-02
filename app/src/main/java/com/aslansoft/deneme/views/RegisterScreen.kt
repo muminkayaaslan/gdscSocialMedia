@@ -197,46 +197,51 @@ fun RegisterScreen(navController: NavHostController) {
                 if (userEmail.value.isNotEmpty()  &&  password.value.isNotEmpty() && username.value.isNotEmpty() && accessPassword.value.isNotEmpty()){
                     if(userEmail.value.endsWith("@gmail.com")){
                         if (password.value == accessPassword.value){
+                            if(password.value.length >= 6){
+                                auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->
+                                    if (task.isSuccessful){
 
-                            auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->
-                                if (task.isSuccessful){
+                                        auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {createUser ->
 
-                                    auth.createUserWithEmailAndPassword(userEmail.value,password.value).addOnCompleteListener {createUser ->
-
-                                        if (createUser.isSuccessful) {
-                                            // Sign in success, update UI with the signed-in user's information
-                                            val currentUser = auth.currentUser
-                                            currentUser?.sendEmailVerification()?.addOnCompleteListener { verified ->
-                                                if (verified.isSuccessful){
-                                                    Toast.makeText(context,"Doğruala E-postası Gönderildi",Toast.LENGTH_SHORT).show()
-                                                }else{
-                                                    Toast.makeText(context,"E-Posta Gönderilirken Bir Hata Oluştu",Toast.LENGTH_SHORT).show()
-                                                    println("sendEmailVerification:failure" + verified.exception)
+                                            if (createUser.isSuccessful) {
+                                                // Sign in success, update UI with the signed-in user's information
+                                                val currentUser = auth.currentUser
+                                                currentUser?.sendEmailVerification()?.addOnCompleteListener { verified ->
+                                                    if (verified.isSuccessful){
+                                                        Toast.makeText(context,"Doğruala E-postası Gönderildi",Toast.LENGTH_SHORT).show()
+                                                    }else{
+                                                        Toast.makeText(context,"E-Posta Gönderilirken Bir Hata Oluştu",Toast.LENGTH_SHORT).show()
+                                                        println("sendEmailVerification:failure" + verified.exception)
+                                                    }
                                                 }
-                                            }
-                                            val data = hashMapOf(
-                                                "username" to username.value,
-                                                "email" to userEmail.value,
-                                                "profilePhoto" to ""
-                                            )
-                                            Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
-                                            db.collection("users").document(userEmail.value).set(data)
-                                            navController.navigate("login_screen")
-                                        } else {
-                                            // If sign in fails, display a message to the user.
-                                            Log.w("ErrorAuth", "signInWithEmail:failure", task.exception)
-                                            Toast.makeText(
-                                                context,
-                                                task.exception.toString(),
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
+                                                val data = hashMapOf(
+                                                    "username" to username.value,
+                                                    "email" to userEmail.value,
+                                                    "profilePhoto" to ""
+                                                )
+                                                Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
+                                                db.collection("users").document(userEmail.value).set(data)
+                                                navController.navigate("login_screen")
+                                            } else {
+                                                // If sign in fails, display a message to the user.
+                                                Log.w("ErrorAuth", "signInWithEmail:failure", task.exception)
+                                                Toast.makeText(
+                                                    context,
+                                                    task.exception.toString(),
+                                                    Toast.LENGTH_SHORT,
+                                                ).show()
 
+                                            }
                                         }
+                                    }else{
+                                        Toast.makeText(context,"This E-Mail Adress Already Exist",Toast.LENGTH_LONG).show()
                                     }
-                                }else{
-                                    Toast.makeText(context,"This E-Mail Adress Already Exist",Toast.LENGTH_LONG).show()
                                 }
+                            }else{
+                                Toast.makeText(context,"Parolanız 6 Karakterden daha uzun olmalıdır",Toast.LENGTH_LONG).show()
                             }
+
+
                         }
                         else{
                             Toast.makeText(context,"Parolalar Aynı Olmalı",Toast.LENGTH_SHORT).show()

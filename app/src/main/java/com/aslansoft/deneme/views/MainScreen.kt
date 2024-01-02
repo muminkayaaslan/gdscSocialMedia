@@ -1,7 +1,10 @@
 package com.aslansoft.deneme.views
 
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,11 +25,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -110,24 +115,18 @@ fun MainScreen(navController: NavHostController) {
                 padding(top = 12.dp),
                     text = "Ana Sayfa", fontFamily = googleSans)}
                 , actions = {
-                    Icon(modifier = Modifier
-                        .size(40.dp)
-                        .padding(top = 10.dp)
-                        .clickable { navController.navigate("massagelist_screen") },imageVector = Icons.Filled.Send, contentDescription = null)
-                },colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+
+                    Badge(navController = navController, newMessageCount = 5)
+                       
+                    }
+
+                ,colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
                     titleContentColor = MaterialTheme.colorScheme.secondary,
                     actionIconContentColor = MaterialTheme.colorScheme.secondary
 
                 ))
-            if (postList.isEmpty()){
-                Column(modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Henüz Gönderi Yok", color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
-                }
-            }
-            else{
+
                 if (isLoading.value){
                     Box(modifier = Modifier
                         .weight(1f)
@@ -161,10 +160,6 @@ fun MainScreen(navController: NavHostController) {
                         }
                     }
                 }
-            }
-
-
-
             Column (verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
                 MainBottomBar(navController = navController)
             }
@@ -177,6 +172,10 @@ fun MainScreen(navController: NavHostController) {
 
 
 
+    }
+    val activity = (LocalContext.current as? Activity)
+    BackHandler(true) {
+        activity?.finish()
     }
  }
 
@@ -224,7 +223,7 @@ fun MainBottomBar(navController: NavHostController?) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = Color.White),
                 onClick = { navController?.
-                navigate("post_screen")
+                navigate("camera")
                 }) {
                 Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
                     contentDescription = null)
@@ -239,7 +238,7 @@ fun MainBottomBar(navController: NavHostController?) {
                 colors = ButtonDefaults.buttonColors(containerColor = googleBlue,
                     contentColor = Color.White),
                 onClick = { navController?.
-                navigate("post_screen")
+                navigate("camera")
                 }) {
                 Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
                     contentDescription = null)
@@ -263,4 +262,31 @@ fun MainBottomBar(navController: NavHostController?) {
 
 
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Badge(navController: NavHostController, newMessageCount: Int = 0) {
+        Box(modifier = Modifier
+            .size(40.dp)
+            .clickable {
+                navController
+                    .navigate("massagelist_screen")
+            }){
+            Image(modifier = Modifier
+                .size(40.dp)
+                .padding(top = 10.dp)
+                ,imageVector = Icons.Filled.Send, contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
+            BadgedBox(modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(35.dp)
+                .padding(top = 15.dp, end = 14.dp),badge = {
+                Badge(modifier = Modifier.fillMaxSize(),contentColor = MaterialTheme.colorScheme.onPrimary, containerColor = MaterialTheme.colorScheme.primary) {
+                    Text(text = newMessageCount.toString(), fontSize = 14.sp)
+                }
+            }) {}
+
+
+        }
+
+    }
 
