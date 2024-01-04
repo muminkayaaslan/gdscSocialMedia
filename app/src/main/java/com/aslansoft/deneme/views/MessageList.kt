@@ -78,7 +78,7 @@ fun MessageList(navController: NavHostController) {
                             .fillMaxWidth()
                             .height(40.dp)
                             .clickable {
-                                navController.navigate("chat_screen/${"Denizhan"}")
+                                navController.navigate("chat_screen/${"ExampleUser"}")
                             }
                             .clip(RoundedCornerShape(10.dp)),){
                         Box(modifier = Modifier.size(40.dp)){
@@ -86,13 +86,13 @@ fun MessageList(navController: NavHostController) {
                         }
                         if (isSystemInDarkTheme()){
                             Column {
-                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "Numan",color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
-                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "I'm TransIt", color = MaterialTheme.colorScheme.secondary)
+                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "ExampleUser",color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
+                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "Hello", color = MaterialTheme.colorScheme.secondary)
                             }
                         }else{
                             Column {
-                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "Numan",color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
-                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "I'm TransIt", color = MaterialTheme.colorScheme.onPrimary)
+                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "ExamplUser",color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
+                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "Hello", color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
 

@@ -26,6 +26,7 @@ import com.aslansoft.deneme.views.SendPostScreen
 import com.aslansoft.deneme.views.Settings
 import com.aslansoft.deneme.views.Badge
 import com.aslansoft.deneme.views.Camera
+import com.aslansoft.deneme.views.UserProfile
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -97,7 +98,6 @@ class MainActivity : ComponentActivity() {
                         ProfileEditScreen(navController = navController)
                     }
                     composable("chat_screen/{username}"){backStackEntry ->
-
                         ChatScreen(navController = navController,username = backStackEntry.arguments?.getString("username"))
                     }
                     composable("badge"){
@@ -105,6 +105,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("camera"){
                         Camera(navController = navController)
+                    }
+                    composable("userprofile/{username}"){backStackEntry ->
+                        UserProfile(navController = navController,username = backStackEntry.arguments?.getString("username"))
                     }
                 }
 

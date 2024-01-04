@@ -11,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -55,6 +57,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.firestore.Query
@@ -74,7 +77,9 @@ fun MainScreen(navController: NavHostController) {
     val username = remember{ mutableStateOf("") }
     val postList = remember { mutableStateListOf<Post>() }
     val isLoading = remember { mutableStateOf(false) }
-
+    val alertDialogState = remember {
+        mutableStateOf(false)
+    }
     Surface(
         Modifier
             .fillMaxSize()
@@ -151,7 +156,24 @@ fun MainScreen(navController: NavHostController) {
                                 )
                                 .clip(RoundedCornerShape(10.dp))
                                 , verticalArrangement = Arrangement.Center) {
-                                Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                Row (modifier = Modifier.fillMaxWidth()){
+
+                                    if (postData.username != username.value){
+                                        if (alertDialogState.value){
+                                            AlertDialog(onDismissRequest = { alertDialogState.value = false }){
+                                                Button(modifier = Modifier.fillMaxWidth(),onClick = { navController.navigate("") }, colors = ButtonDefaults.buttonColors(
+                                                    contentColor = Color.Red,
+                                                    containerColor = MaterialTheme.colorScheme.onPrimary
+                                                )) {
+
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+
+                                }
 
                                 Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
 

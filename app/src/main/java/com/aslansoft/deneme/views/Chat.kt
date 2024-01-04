@@ -18,13 +18,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,11 +43,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
 import com.aslansoft.deneme.ui.theme.googleSans
+import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 data class Message(
         val senderId: String?,
@@ -55,18 +64,46 @@ data class ChatUser(
     val username: String = "",
     val profile_photo: String = ""
 )
-data class Conversation(
-    val participants: List<String> = listOf(),
-    val lastMessage: Message = Message(),
 
-    )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(navController: NavHostController, username: String?) {
+    val myMessage = remember {
+        mutableStateOf("")
+    }
+    val profile_photo = remember {
+        mutableStateOf("")
+    }
     val message = remember {
         mutableStateOf("")
     }
+    val date = remember {
+        mutableStateOf<Timestamp>(Timestamp.now())
+    }
+    val senderId = remember {
+        mutableStateOf("")
+    }
+    val receiverId = remember {
+        mutableStateOf("")
+    }
+    val myUsername = remember {
+        mutableStateOf("")
+    }
+    val myProfilePhoto = remember {
+        mutableStateOf("")
+    }
+    val db = Firebase.firestore
+    val auth = Firebase.auth
+    val currentUser = auth.currentUser
+    currentUser?.email?.let { db.collection("users").document(it).get().addOnSuccessListener { document ->
+        val data = document.data
+        myUsername.value = data?.get("username") as? String ?: ""
+    } }
+    val users = listOf(myUsername.value,username.toString()).sorted()
+    if (myUsername.value.isNotEmpty()){
+    val conversationId = "${users[0]}_${users[1]}"
     Surface( modifier = Modifier.fillMaxSize() ,color = MaterialTheme.colorScheme.primary) {
+        println(conversationId)
         Column (modifier = Modifier.fillMaxSize()){
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
@@ -90,24 +127,50 @@ fun ChatScreen(navController: NavHostController, username: String?) {
                     }
                 },
                 navigationIcon = {
-                 Icon(modifier = Modifier
-                     .fillMaxHeight()
-                     .width(30.dp)
-                     .clickable {
-                         navController.navigateUp()
-                     },imageVector = Icons.Filled.ArrowBack, contentDescription = "back", tint = MaterialTheme.colorScheme.secondary)
+                    Icon(modifier = Modifier
+                        .fillMaxHeight()
+                        .width(30.dp)
+                        .clickable {
+                            navController.navigateUp()
+                        },imageVector = Icons.Filled.ArrowBack, contentDescription = "back", tint = MaterialTheme.colorScheme.secondary)
                 }
                 ,colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
                 ))
         }
-        Box(modifier = Modifier.fillMaxWidth()){
-            OutlinedTextField(value = message.value, onValueChange ={
-                message.value
-            } )
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter){
+            OutlinedTextField(modifier = Modifier
+                .fillMaxWidth(),
+                value = myMessage.value,
+                onValueChange ={
+                myMessage.value = it
+            }, trailingIcon ={
+                            Icon(modifier = Modifier.clickable {
+                                          db.collection("conversations").document()
+                            },imageVector = Icons.Filled.Send,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary)
+            },
+                placeholder = {
+                              Text(text = "Mesaj Yaz...")
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                cursorColor = MaterialTheme.colorScheme.onPrimary,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary,
+                    backgroundColor = MaterialTheme.colorScheme.primary)
+            ),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            )
         }
     }
     BackHandler(true) {
         navController.navigateUp()
     }
+}
 }
