@@ -3,6 +3,7 @@ package com.aslansoft.deneme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -40,7 +42,6 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         setContent {
             DenemeTheme {
-
                 //Status Bar
                 val systemUiController = rememberSystemUiController()
                 if(isSystemInDarkTheme()){
@@ -97,7 +98,9 @@ class MainActivity : ComponentActivity() {
                     composable("profileEdit_screen"){
                         ProfileEditScreen(navController = navController)
                     }
-                    composable("chat_screen/{username}"){backStackEntry ->
+                    composable("chat_screen/{username}", enterTransition = { fadeIn(animationSpec = tween(0)) /*+ slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,tween(3000))*/},
+                        exitTransition = { fadeOut(animationSpec = tween(0)) }){ backStackEntry ->
                         ChatScreen(navController = navController,username = backStackEntry.arguments?.getString("username"))
                     }
                     composable("badge"){

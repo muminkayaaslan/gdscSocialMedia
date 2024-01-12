@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -53,12 +54,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
+import com.aslansoft.deneme.R
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -66,7 +73,8 @@ import com.google.firebase.ktx.Firebase
 
 data class Post(
     val username: String,
-    val post: String
+    val post: String,
+    val profilePhoto: String
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +88,9 @@ fun MainScreen(navController: NavHostController) {
     val alertDialogState = remember {
         mutableStateOf(false)
     }
+    val userPP = remember {
+        mutableStateOf("")
+    }
     Surface(
         Modifier
             .fillMaxSize()
@@ -92,7 +103,8 @@ fun MainScreen(navController: NavHostController) {
                     val postData: Map<String,Any> = document.data
                     username.value = postData["username"].toString()
                     post.value = postData["post"].toString()
-                    postList.add(Post(username.value, post.value))
+                    userPP.value = postData["profile photo"].toString()
+                    postList.add(Post(username.value, post.value,userPP.value))
                     isLoading.value = false
                 }
             }.addOnFailureListener{
@@ -157,11 +169,27 @@ fun MainScreen(navController: NavHostController) {
                                 .clip(RoundedCornerShape(10.dp))
                                 , verticalArrangement = Arrangement.Center) {
                                 Row (modifier = Modifier.fillMaxWidth()){
-
+                                    Box(modifier = Modifier.size(30.dp)){
+                                        if (postData.profilePhoto.isNotEmpty() && postData.profilePhoto != null){
+                                            val painter = rememberAsyncImagePainter(
+                                                ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
+                                                    crossfade(true)
+                                                    transformations(CircleCropTransformation())
+                                                }).build()
+                                            )
+                                            Image(modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(start = 2.dp, top = 2.dp),painter = painter, contentDescription = null )
+                                        }else{
+                                            Icon(modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                        }
+                                    }
                                     if (postData.username != username.value){
                                         if (alertDialogState.value){
                                             AlertDialog(onDismissRequest = { alertDialogState.value = false }){
-                                                Button(modifier = Modifier.fillMaxWidth(),onClick = { navController.navigate("") }, colors = ButtonDefaults.buttonColors(
+                                                Button(modifier = Modifier.fillMaxWidth(),onClick = { navController.navigate("chat_screen/${postData.username}") }, colors = ButtonDefaults.buttonColors(
                                                     contentColor = Color.Red,
                                                     containerColor = MaterialTheme.colorScheme.onPrimary
                                                 )) {
@@ -171,12 +199,16 @@ fun MainScreen(navController: NavHostController) {
                                         }
 
                                     }
-                                    Text(modifier = Modifier.padding(start = 15.dp , top = 10.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                    
 
+                                    Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
+                                    Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
                                 }
-
                                 Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
-
+                                Image(modifier = Modifier.padding(vertical = 10.dp).align(Alignment.CenterHorizontally),
+                                    bitmap = ImageBitmap.imageResource(R.drawable.ornek),
+                                    contentDescription = null
+                                )
                             }
 
                         }

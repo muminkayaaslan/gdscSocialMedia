@@ -57,18 +57,20 @@ fun SendPostScreen(navController: NavHostController) {
     val username = remember {
         mutableStateOf("")
     }
+    val profilePhoto = remember { mutableStateOf("") }
     val timestamp: Timestamp = Timestamp.now()
     db.collection("users").document(email!!).get().addOnSuccessListener {
         val data = it.data
-        username.value =data?.get("username") as? String?: ""
-
+        username.value =data?.get("username") as? String ?: ""
+        profilePhoto.value = data?.get("profilePhoto") as? String ?: ""
     }.addOnFailureListener{
         println(it.message)
     }
     val postMap: HashMap<String,Any> = hashMapOf(
         "post" to post.value,
         "username" to username.value,
-        "date" to timestamp
+        "date" to timestamp,
+        "profile photo" to profilePhoto.value
     )
     //Camera Permission Start
     val cameraGranted = remember {

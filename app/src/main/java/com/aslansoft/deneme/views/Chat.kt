@@ -53,17 +53,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 
-data class Message(
-        val senderId: String?,
-        val receiverId: String?,
-        val date: Timestamp,
-        val message: String?,
-        val isRead: Boolean = false
-        )
-data class ChatUser(
-    val username: String = "",
-    val profile_photo: String = ""
-)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,39 +61,7 @@ fun ChatScreen(navController: NavHostController, username: String?) {
     val myMessage = remember {
         mutableStateOf("")
     }
-    val profile_photo = remember {
-        mutableStateOf("")
-    }
-    val message = remember {
-        mutableStateOf("")
-    }
-    val date = remember {
-        mutableStateOf<Timestamp>(Timestamp.now())
-    }
-    val senderId = remember {
-        mutableStateOf("")
-    }
-    val receiverId = remember {
-        mutableStateOf("")
-    }
-    val myUsername = remember {
-        mutableStateOf("")
-    }
-    val myProfilePhoto = remember {
-        mutableStateOf("")
-    }
-    val db = Firebase.firestore
-    val auth = Firebase.auth
-    val currentUser = auth.currentUser
-    currentUser?.email?.let { db.collection("users").document(it).get().addOnSuccessListener { document ->
-        val data = document.data
-        myUsername.value = data?.get("username") as? String ?: ""
-    } }
-    val users = listOf(myUsername.value,username.toString()).sorted()
-    if (myUsername.value.isNotEmpty()){
-    val conversationId = "${users[0]}_${users[1]}"
     Surface( modifier = Modifier.fillMaxSize() ,color = MaterialTheme.colorScheme.primary) {
-        println(conversationId)
         Column (modifier = Modifier.fillMaxSize()){
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
@@ -145,9 +103,7 @@ fun ChatScreen(navController: NavHostController, username: String?) {
                 onValueChange ={
                 myMessage.value = it
             }, trailingIcon ={
-                            Icon(modifier = Modifier.clickable {
-                                          db.collection("conversations").document()
-                            },imageVector = Icons.Filled.Send,
+                            Icon(imageVector = Icons.Filled.Send,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimary)
             },
@@ -172,5 +128,4 @@ fun ChatScreen(navController: NavHostController, username: String?) {
     BackHandler(true) {
         navController.navigateUp()
     }
-}
 }
