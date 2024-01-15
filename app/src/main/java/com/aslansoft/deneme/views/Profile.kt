@@ -2,6 +2,7 @@ package com.aslansoft.deneme.views
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -64,7 +66,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -83,7 +84,7 @@ data class MyPost(
     val post: String,
     val date: Timestamp
         )
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     Surface(
@@ -98,16 +99,14 @@ fun ProfileScreen(navController: NavHostController) {
         val sheetState = rememberModalBottomSheetState()
         var bottomSheetIsOpen by rememberSaveable { mutableStateOf(false) }
         val myPostList = remember { mutableStateListOf<MyPost>() }
-        val post = remember { mutableStateOf("") }
-        val time = remember { mutableStateOf<Timestamp?>(null) }
         val isLoading= remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
         val context = LocalContext.current
 
         currentUser?.email?.let {
 
-            db.collection("users").document(it).get().addOnSuccessListener {
-                val data = it.data
+            db.collection("users").document(it).get().addOnSuccessListener {snapShot ->
+                val data = snapShot.data
                 username.value = data?.get("username") as? String ?: ""
                 profilePhoto.value = data?.get("profilePhoto") as? String ?: ""
             }
@@ -177,7 +176,7 @@ fun ProfileScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .height(150.dp)
                 .align(Alignment.CenterHorizontally)){
-                if (profilePhoto.value.isNotEmpty() && profilePhoto.value != null) {
+                if (profilePhoto.value.isNotEmpty()) {
                     Image(
                         modifier = Modifier.fillMaxSize(),
                         painter = painter,
@@ -195,7 +194,7 @@ fun ProfileScreen(navController: NavHostController) {
 
             Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
             //kendi paylaştığın gönderiler
-            Spacer(modifier = Modifier.padding(30.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
             if (myPostList.isEmpty() && !isLoading.value){
                 if (isLoading.value) {
                     Box(
@@ -227,17 +226,13 @@ fun ProfileScreen(navController: NavHostController) {
                 LazyColumn(modifier = Modifier.weight(1f)){
                         items(myPostList.size){index ->
                             val postData = myPostList[index]
-                            Column(modifier = Modifier
+                            OutlinedCard(modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
-                                .padding(bottom = 3.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    RoundedCornerShape(10.dp)
-                                )
+                                .padding(bottom = 3.dp, end = 3.dp, start = 3.dp)
                                 .clip(
                                     RoundedCornerShape(10.dp)
-                                ), verticalArrangement = Arrangement.Center) {
+                                ), border = BorderStroke(0.5.dp,MaterialTheme.colorScheme.onPrimary)
+                            ) {
                                 val timestamp = postData.date.seconds + postData.date.nanoseconds / 1000000000
                                 val dateData = Date(timestamp * 1000L)
                                 val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
@@ -262,16 +257,26 @@ fun ProfileScreen(navController: NavHostController) {
                                     .padding(start = 10.dp, bottom = 3.dp)){
                                     Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
 
-                                    Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
 
-                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
-                                    }
                                 }
+                                Image(modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                    bitmap = ImageBitmap.imageResource(R.drawable.ornek),
+                                    contentDescription = null
+                                )
+                                Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
+
+                                Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                            }
                             }
 
                         }
                     }
                 }
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom , horizontalAlignment = Alignment.CenterHorizontally) {
+                ProfileBottomBar(navController = navController)
+            }
         }
         // Alttan açılan Menü
         if (bottomSheetIsOpen){
@@ -341,9 +346,7 @@ fun ProfileScreen(navController: NavHostController) {
         }
 
 
-        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom , horizontalAlignment = Alignment.CenterHorizontally) {
-            ProfileBottomBar(navController = navController)
-        }
+
     }
 }
 
@@ -353,13 +356,11 @@ fun ProfileBottomBar(navController: NavHostController?) {
 
     NavigationBar(modifier = Modifier
         .height(60.dp)
-        .padding(start = 5.dp, end = 5.dp, bottom = 10.dp)
+        .padding( bottom = 10.dp)
+        .background( shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primary)
         .clip(
             RoundedCornerShape(
-                topEnd = 20.dp,
-                topStart = 20.dp,
-                bottomEnd = 20.dp,
-                bottomStart = 20.dp
+               10.dp
             )
         ),
         containerColor = MaterialTheme.colorScheme.onPrimary,

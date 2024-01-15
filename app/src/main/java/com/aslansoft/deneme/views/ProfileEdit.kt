@@ -1,8 +1,13 @@
 package com.aslansoft.deneme.views
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -62,6 +68,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditScreen(navController: NavHostController) {
@@ -126,6 +133,35 @@ fun ProfileEditScreen(navController: NavHostController) {
                         }
                 }
             }
+            val multiplePermissionsLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            )  { permissions ->
+                val myVersion = Build.VERSION.SDK_INT
+                if (myVersion <= Build.VERSION_CODES.S){
+                    if (permissions[Manifest.permission.READ_MEDIA_IMAGES] == true) {
+                        pickPhotoLauncher.launch("image/*")
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Dosya Erişimi İçin İzin Vermelisin",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }else{
+                    if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true){
+                        pickPhotoLauncher.launch("image/*")
+                    }else{
+                        Toast.makeText(
+                            context,
+                            "Dosya Erişimi İçin İzin Vermelisin",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+
+            }
+
 
 
             val painter = rememberAsyncImagePainter(
@@ -172,7 +208,17 @@ fun ProfileEditScreen(navController: NavHostController) {
                         .fillMaxSize()
                         .align(Alignment.Center)
                         .clickable {
-                            pickPhotoLauncher.launch("image/*")
+
+
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.READ_MEDIA_IMAGES
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    pickPhotoLauncher.launch("image/*")
+                                } else {
+                                    multiplePermissionsLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
+                                }
                         },painter = painter, contentDescription = "profilePhoto")
                 }
                 else{

@@ -73,26 +73,9 @@ fun SendPostScreen(navController: NavHostController) {
         "profile photo" to profilePhoto.value
     )
     //Camera Permission Start
-    val cameraGranted = remember {
-        mutableStateOf(false)
-    }
-    val alertDialogState = remember {
-        mutableStateOf(false)
-    }
-    cameraGranted.value = ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    if (!cameraGranted.value){
-        alertDialogState.value = true
-    }
-    val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
-         ActivityResultContracts.RequestPermission()){ isGranted ->
-        if (isGranted){
-            cameraGranted.value = true
 
-        }else{
-            Toast.makeText(context,"Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",Toast.LENGTH_LONG).show()
-        }
 
-    }
+
 
 
     //Camera Permission End
@@ -102,112 +85,44 @@ fun SendPostScreen(navController: NavHostController) {
         , color = MaterialTheme.colorScheme.primary) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
-                val containerColor = if (isSystemInDarkTheme()){
-                    Color(49, 49, 49, 255)
-                } else {
-                    Color.LightGray
+            OutlinedTextField(value = post.value,
+                onValueChange = {
+                    post.value = it
                 }
-            if (alertDialogState.value == true){
-                AlertDialog(containerColor = containerColor,
-                    onDismissRequest = { alertDialogState.value = false },
-                    text = {
-                        if (isSystemInDarkTheme()){
-                            Text(text = "Kamerayı Kullanmak ve Gönderi Paylaşabilmek İçin Erişim İzni Vermeniz Gerekmektedir.",
-                                color = MaterialTheme.colorScheme.secondary)
-                        }else{
-                            Text(text = "Kamerayı Kullanmak ve Gönderi Paylaşabilmek İçin Erişim İzni Vermeniz Gerekmektedir.",
-                                color = MaterialTheme.colorScheme.onPrimary)
-                        }
-
-                    },
-                    confirmButton = {
-
-                        if (isSystemInDarkTheme()){
-                            TextButton(onClick = {
-                                requestPermissionCameraLauncher.launch(android.Manifest.permission.CAMERA)
-                            alertDialogState.value = false
-                            }) {
-                                Text(text = "İzin Ver",
-                                    color = MaterialTheme.colorScheme.secondary)
-                            }
-                        }else{
-                            TextButton(onClick = { android.Manifest.permission.CAMERA
-                                alertDialogState.value = false}) {
-                                Text(text = "İzin Ver",
-                                    color = MaterialTheme.colorScheme.onPrimary)
-                            }
-                        }
-                    },
-                    dismissButton = {
-                        if (isSystemInDarkTheme()){
-                            TextButton(onClick = { cameraGranted.value = false
-                            alertDialogState.value = false }) {
-                                Text(text = "İzin Verme",
-                                    color = MaterialTheme.colorScheme.secondary)
-                            }
-                        }else{
-                            TextButton(onClick = { cameraGranted.value = false
-                                alertDialogState.value = false}) {
-                                Text(text = "İzin Verme",
-                                    color = MaterialTheme.colorScheme.onPrimary)
-                            }
-                        }
+                ,placeholder = { Text(text = "Durum Paylaş...",
+                    color = Color.LightGray,
+                    fontFamily = googleSans)},
+                maxLines = 5,
+                singleLine = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
+                ))
+            Spacer(modifier = Modifier.padding(10.dp))
+            OutlinedButton(onClick = {
+                db.collection("posts")
+                    .add(postMap)
+                    .addOnCompleteListener{
+                        Toast.makeText(context,
+                            "Gönderi başarı ile paylaşıldı",
+                            Toast.LENGTH_SHORT).show()
+                        navController.navigate("main_screen")
+                    }.addOnFailureListener{
+                        println(it.localizedMessage)
+                        Toast.makeText(context,
+                            "Gönderi paylaşırken bir hata oluştu",
+                            Toast.LENGTH_LONG).show()
                     }
-                    , icon = {
-                        if (isSystemInDarkTheme()){
-                            Image(modifier = Modifier.size(20.dp),bitmap = ImageBitmap.imageResource(R.drawable.camera),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary) )
-
-                        }else{
-                            Image(modifier = Modifier.size(20.dp),bitmap = ImageBitmap.imageResource(R.drawable.camera),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary) )
-
-                        }
-                    })
-            }else{
-                if (cameraGranted.value == false) alertDialogState.value = true else alertDialogState.value = false
-
-                OutlinedTextField(value = post.value,
-                    onValueChange = {
-                        post.value = it
-                    }
-                    ,placeholder = { Text(text = "Durum Paylaş...",
-                        color = Color.LightGray,
-                        fontFamily = googleSans)},
-                    maxLines = 5,
-                    singleLine = false,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                        focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                        cursorColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                        focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledPlaceholderColor = MaterialTheme.colorScheme.onPrimary,
-                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
-                    ))
-                Spacer(modifier = Modifier.padding(10.dp))
-                OutlinedButton(onClick = {
-                    db.collection("posts")
-                        .add(postMap)
-                        .addOnCompleteListener{
-                            Toast.makeText(context,
-                                "Gönderi başarı ile paylaşıldı",
-                                Toast.LENGTH_SHORT).show()
-                            navController.navigate("main_screen")
-                        }.addOnFailureListener{
-                            println(it.localizedMessage)
-                            Toast.makeText(context,
-                                "Gönderi paylaşırken bir hata oluştu",
-                                Toast.LENGTH_LONG).show()
-                        }
-                }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {
-                    Text(text = "Paylaş",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontFamily = googleSans)
-                }
+            }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {
+                Text(text = "Paylaş",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = googleSans)
             }
         }
 

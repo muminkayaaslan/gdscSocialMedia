@@ -1,9 +1,10 @@
 package com.aslansoft.deneme
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.AnimationSpec
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -11,11 +12,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aslansoft.deneme.ui.theme.DenemeTheme
+import com.aslansoft.deneme.views.Badge
+import com.aslansoft.deneme.views.Camera
 import com.aslansoft.deneme.views.ChatScreen
 import com.aslansoft.deneme.views.LoginScreen
 import com.aslansoft.deneme.views.MainBottomBar
@@ -26,16 +28,13 @@ import com.aslansoft.deneme.views.ProfileScreen
 import com.aslansoft.deneme.views.RegisterScreen
 import com.aslansoft.deneme.views.SendPostScreen
 import com.aslansoft.deneme.views.Settings
-import com.aslansoft.deneme.views.Badge
-import com.aslansoft.deneme.views.Camera
 import com.aslansoft.deneme.views.UserProfile
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +53,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 //Start Destination
-                val db = Firebase.firestore
                 val auth = FirebaseAuth.getInstance()
                 val startDestination = remember {
                     mutableStateOf("")

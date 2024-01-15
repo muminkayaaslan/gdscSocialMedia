@@ -1,9 +1,14 @@
 package com.aslansoft.deneme.views
 
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,16 +37,21 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -52,6 +62,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -60,6 +71,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
@@ -159,15 +171,13 @@ fun MainScreen(navController: NavHostController) {
                         items(postList.size){index ->
                             val postData = postList[index]
 
-                            Column(modifier = Modifier
+                            OutlinedCard(modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(3.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    RoundedCornerShape(10.dp)
-                                )
-                                .clip(RoundedCornerShape(10.dp))
-                                , verticalArrangement = Arrangement.Center) {
+                                .clip(RoundedCornerShape(10.dp)), colors = CardDefaults.outlinedCardColors(
+                                  contentColor = MaterialTheme.colorScheme.onPrimary
+                                ), border = BorderStroke(0.5.dp,color = MaterialTheme.colorScheme.onPrimary)
+                            ) {
                                 Row (modifier = Modifier.fillMaxWidth()){
                                     Box(modifier = Modifier.size(30.dp)){
                                         if (postData.profilePhoto.isNotEmpty() && postData.profilePhoto != null){
@@ -181,9 +191,16 @@ fun MainScreen(navController: NavHostController) {
                                                 .fillMaxSize()
                                                 .padding(start = 2.dp, top = 2.dp),painter = painter, contentDescription = null )
                                         }else{
-                                            Icon(modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                            if (isSystemInDarkTheme()){
+                                                Icon(modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                            }else{
+                                                Icon(modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                            }
+
                                         }
                                     }
                                     if (postData.username != username.value){
@@ -202,10 +219,22 @@ fun MainScreen(navController: NavHostController) {
                                     
 
                                     Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
-                                    Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                    if (isSystemInDarkTheme()){
+                                        Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                    }else{
+                                        Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+
+                                    }
                                 }
-                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
-                                Image(modifier = Modifier.padding(vertical = 10.dp).align(Alignment.CenterHorizontally),
+                                if (isSystemInDarkTheme()){
+                                    Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
+                                }else{
+                                    Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = MaterialTheme.colorScheme.onPrimary, fontSize = 17.sp, fontFamily = googleSans)
+
+                                }
+                                Image(modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .align(Alignment.CenterHorizontally),
                                     bitmap = ImageBitmap.imageResource(R.drawable.ornek),
                                     contentDescription = null
                                 )
@@ -236,16 +265,13 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun MainBottomBar(navController: NavHostController?) {
 
-
     NavigationBar(modifier = Modifier
         .height(60.dp)
-        .padding(start = 5.dp, end = 5.dp, bottom = 10.dp)
+        .padding( bottom = 10.dp)
+        .background( shape = RoundedCornerShape(10.dp), color = Color.Transparent)
         .clip(
             RoundedCornerShape(
-                topEnd = 20.dp,
-                topStart = 20.dp,
-                bottomEnd = 20.dp,
-                bottomStart = 20.dp
+           10.dp
             )
         ),
         containerColor = MaterialTheme.colorScheme.onPrimary,
@@ -276,8 +302,10 @@ fun MainBottomBar(navController: NavHostController?) {
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = Color.White),
-                onClick = { navController?.
-                navigate("camera")
+                onClick = {
+                    navController?.navigate("camera")
+
+
                 }) {
                 Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
                     contentDescription = null)
