@@ -3,6 +3,7 @@ package com.aslansoft.deneme.views
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -37,11 +38,9 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +50,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -62,7 +60,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -74,7 +71,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.R
@@ -244,7 +240,7 @@ fun MainScreen(navController: NavHostController) {
                     }
                 }
             Column (verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
-                MainBottomBar(navController = navController)
+                MainBottomBar(navController = navController, context = context)
             }
         }
 
@@ -263,8 +259,24 @@ fun MainScreen(navController: NavHostController) {
  }
 
 @Composable
-fun MainBottomBar(navController: NavHostController?) {
+fun MainBottomBar(navController: NavHostController?,context: Context) {
 
+    val cameraGranted = remember {
+        mutableStateOf(false)
+    }
+
+    cameraGranted.value = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
+    val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()){ isGranted ->
+        if (isGranted){
+            cameraGranted.value = true
+
+        }else{
+            Toast.makeText(context,"Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",Toast.LENGTH_LONG).show()
+        }
+
+    }
     NavigationBar(modifier = Modifier
         .height(60.dp)
         .padding( bottom = 10.dp)
@@ -303,7 +315,12 @@ fun MainBottomBar(navController: NavHostController?) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = Color.White),
                 onClick = {
-                    navController?.navigate("camera")
+                    if (!cameraGranted.value){
+                        requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                    }else{
+                        navController?.navigate("camera")
+                    }
+
 
 
                 }) {

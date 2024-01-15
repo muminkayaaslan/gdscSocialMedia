@@ -66,25 +66,6 @@
                 )
             }
         }
-        val cameraGranted = remember {
-            mutableStateOf(false)
-        }
-        val alertDialogState = remember {
-            mutableStateOf(false)
-        }
-        cameraGranted.value = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        alertDialogState.value = !cameraGranted.value
-        val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission()){ isGranted ->
-            if (isGranted){
-                cameraGranted.value = true
-
-                navController?.navigate("camera")
-            }else{
-                Toast.makeText(context,"Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",Toast.LENGTH_LONG).show()
-            }
-
-        }
         val pickPhotoLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()){uri ->
             //burda butona tıklanınca eğer galeriden bir görsel seçildiyse sendPost.kt yönlendirilecek  fotoğraf
 
@@ -117,14 +98,40 @@
     }
         Surface(Modifier.fillMaxSize()) {
 
-            if (!cameraGranted.value) {
-                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+
+
+
+                /*
+                AlertDialog(onDismissRequest = { !cameraGranted.value }, confirmButton = { IconButton(onClick = { cameraGranted.value = true}) {
+                    Icon(imageVector = Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                } },
+                    dismissButton = { IconButton(onClick = { cameraGranted.value = false }) {
+                        Icon(imageVector = Icons.Filled.Clear, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
+                    }},
+                    title = { Text(text = "Kamera")},
+                    icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.photo_camera), contentDescription = null)},
+                    text = { Text(text = "Kamerayı kullanmak ve gönderi paylaşabilmek için erişim izni vermeniz gerekmektedir")})
+            */
+/*
+            if (!cameraGranted.value){
+                AlertDialog(onDismissRequest = { !cameraGranted.value }) {
+                    if (!cameraGranted.value){
+                        requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                    else{
+                        cameraGranted.value
+                    }
+
+                }
+            }else {
+
             }
 
-
-
-
+*/
                 Box(modifier = Modifier.fillMaxSize()){
+                    CameraPreview(
+                        controller = controller,
+                    )
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

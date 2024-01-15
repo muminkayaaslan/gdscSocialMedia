@@ -1,5 +1,6 @@
 package com.aslansoft.deneme
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +13,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -82,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         SendPostScreen(navController = navController)
                     }
                     composable("main_bottom_bar"){
-                        MainBottomBar(navController = navController)
+                        MainBottomBar(navController = navController, context = LocalContext.current)
                     }
                     composable("profile_screen"){
                         ProfileScreen(navController = navController)
