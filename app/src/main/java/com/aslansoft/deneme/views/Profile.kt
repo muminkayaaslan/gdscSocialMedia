@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontStyle
@@ -82,6 +83,7 @@ import java.util.Locale
 
 data class MyPost(
     val post: String,
+    val postPhoto: String,
     val date: Timestamp
         )
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,10 +124,11 @@ fun ProfileScreen(navController: NavHostController) {
                     for (document in documents) {
                         val postData: Map<String, Any> = document.data
                         val currentPost = postData["post"].toString()
+                        val postPhoto = postData["post_url"].toString()
                         val currentDate = postData["date"] as Timestamp?
 
                         if (currentDate != null) {
-                            val myPost = MyPost(currentPost, currentDate)
+                            val myPost = MyPost(currentPost,postPhoto ,currentDate)
                             myPostList.add(myPost)
                         }
                     }
@@ -259,15 +262,22 @@ fun ProfileScreen(navController: NavHostController) {
 
 
                                 }
-                                Image(modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                    bitmap = ImageBitmap.imageResource(R.drawable.ornek),
-                                    contentDescription = null
-                                )
+
+
                                 Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
 
-                                Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                                    if (postData.postPhoto.isNotEmpty()){
+                                        val painter = rememberAsyncImagePainter(model = postData.postPhoto)
+                                        Image(modifier = Modifier
+                                            .padding(vertical = 10.dp)
+                                            .size(300.dp)
+                                            .align(Alignment.CenterHorizontally),
+                                            painter = painter,
+                                            contentScale = ContentScale.Crop,
+                                            contentDescription = null
+                                        )
+                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                                    }
                             }
                             }
 
@@ -356,11 +366,11 @@ fun ProfileBottomBar(navController: NavHostController?) {
 
     NavigationBar(modifier = Modifier
         .height(60.dp)
-        .padding( bottom = 10.dp)
-        .background( shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primary)
+        .padding(bottom = 10.dp)
+        .background(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primary)
         .clip(
             RoundedCornerShape(
-               10.dp
+                10.dp
             )
         ),
         containerColor = MaterialTheme.colorScheme.onPrimary,

@@ -98,9 +98,9 @@ fun UserProfile(navController: NavHostController, username: String?) {
                         val postData: Map<String, Any> = document.data
                         val currentPost = postData["post"].toString()
                         val currentDate = postData["date"] as Timestamp?
-
+                        val postPhoto = postData["post_url"].toString()
                         if (currentDate != null) {
-                            val myPost = MyPost(currentPost, currentDate)
+                            val myPost = MyPost(currentPost, postPhoto ,currentDate)
                             myPostList.add(myPost)
                         }
                     }
@@ -228,7 +228,10 @@ fun UserProfile(navController: NavHostController, username: String?) {
                             Row (modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, bottom = 3.dp)){
-                                Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+
+                                }
 
                                 Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
 

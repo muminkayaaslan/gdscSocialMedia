@@ -38,6 +38,9 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,12 +48,16 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
     val post = remember {
         mutableStateOf("")
     }
+    val storage = Firebase.storage
     val context = LocalContext.current
     val auth = Firebase.auth
     val db = Firebase.firestore
     val currentUser = auth.currentUser
     val email = currentUser?.email
     val username = remember {
+        mutableStateOf("")
+    }
+    val photoUrl = remember {
         mutableStateOf("")
     }
     val profilePhoto = remember { mutableStateOf("") }
@@ -62,19 +69,12 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
     }.addOnFailureListener{
         println(it.message)
     }
-    val postMap: HashMap<String,Any> = hashMapOf(
-        "post" to post.value,
-        "username" to username.value,
-        "date" to timestamp,
-        "profile photo" to profilePhoto.value
-    )
-    //Camera Permission Start
 
 
 
 
 
-    //Camera Permission End
+
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -83,7 +83,21 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                 if (uri != null){
                     val painter = rememberAsyncImagePainter(model = uri.toUri())
                     Image(modifier = Modifier.size(300.dp), contentScale = ContentScale.Crop,painter = painter , contentDescription = null )
+                    val timestamp = System.currentTimeMillis()
+                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                    val formattedDate = dateFormat.format(timestamp)
+                    val fileName = "${username.value}_${formattedDate}"
+                    val storageRef = storage.reference.child("posts/${username.value}/$fileName")
+                    storageRef.putFile(uri.toUri())
+                        .addOnSuccessListener {taskSnapShots ->
+                            storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
+                               photoUrl.value = imageUrl.toString()
+
+                            }
+
+                        }
                 }
+            //Fotoğrafı Storage'a gönderme
 
             Spacer(modifier = Modifier.padding(vertical = 3.dp))
 
@@ -107,6 +121,14 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
                 ))
             Spacer(modifier = Modifier.padding(10.dp))
+            val postMap: HashMap<String,Any> = hashMapOf(
+                "post" to post.value,
+                "username" to username.value,
+                "date" to timestamp,
+                "profile photo" to profilePhoto.value,
+                "post_url" to photoUrl.value
+            )
+
             OutlinedButton(onClick = {
                 db.collection("posts")
                     .add(postMap)
