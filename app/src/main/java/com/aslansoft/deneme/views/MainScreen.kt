@@ -177,7 +177,14 @@ fun MainScreen(navController: NavHostController) {
                             OutlinedCard(modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(3.dp)
-                                .clip(RoundedCornerShape(10.dp)), colors = CardDefaults.outlinedCardColors(
+                                .clip(RoundedCornerShape(10.dp)).clickable {
+                                    if (username.value != postData.username){
+                                        navController.navigate("chat_screen/${postData.username}")
+                                    }else{
+                                        navController.navigate("profile_screen")
+                                    }
+
+                                }, colors = CardDefaults.outlinedCardColors(
                                   contentColor = MaterialTheme.colorScheme.onPrimary
                                 ), border = BorderStroke(0.5.dp,color = MaterialTheme.colorScheme.onPrimary)
                             ) {
