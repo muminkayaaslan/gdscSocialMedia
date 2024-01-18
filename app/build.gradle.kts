@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.aslansoft.deneme"
-        minSdk = 26
+        minSdk = 30
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
@@ -20,9 +20,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
-        }
-        externalNativeBuild {
-
         }
     }
 

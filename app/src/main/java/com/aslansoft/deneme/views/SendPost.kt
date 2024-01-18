@@ -1,19 +1,18 @@
 package com.aslansoft.deneme.views
 
 
-import android.content.pm.PackageManager
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -21,31 +20,28 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
-import com.aslansoft.deneme.R
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import androidx.activity.result.contract.ActivityResultContracts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SendPostScreen(navController: NavHostController) {
+fun SendPostScreen(navController: NavHostController, uri: String?) {
     val post = remember {
         mutableStateOf("")
     }
@@ -84,6 +80,12 @@ fun SendPostScreen(navController: NavHostController) {
         .fillMaxSize()
         , color = MaterialTheme.colorScheme.primary) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                if (uri != null){
+                    val painter = rememberAsyncImagePainter(model = uri.toUri())
+                    Image(modifier = Modifier.size(300.dp), contentScale = ContentScale.Crop,painter = painter , contentDescription = null )
+                }
+
+            Spacer(modifier = Modifier.padding(vertical = 3.dp))
 
             OutlinedTextField(value = post.value,
                 onValueChange = {

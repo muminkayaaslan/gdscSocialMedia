@@ -9,18 +9,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SuspiciousIndentation", "ClickableViewAccessibility")
 @Composable
 fun CameraPreview(
     controller: LifecycleCameraController
 ) {
-
     val lifecycleOwner = LocalLifecycleOwner.current
-        AndroidView(modifier = Modifier.fillMaxSize(),factory = {
-            PreviewView(it).apply {
-                this.controller = controller
-                controller.bindToLifecycle(lifecycleOwner)
-                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-            }
-        })
+
+    AndroidView(modifier = Modifier.fillMaxSize(), factory = { it ->
+        val previewView = PreviewView(it)
+
+        // CameraController'ı burada ayarlamak daha doğru
+        previewView.controller = controller
+        controller.bindToLifecycle(lifecycleOwner)
+        previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        previewView
+    })
 }

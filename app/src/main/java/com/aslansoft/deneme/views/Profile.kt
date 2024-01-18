@@ -391,7 +391,7 @@ fun ProfileBottomBar(navController: NavHostController?) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = Color.White),
                 onClick = { navController?.
-                navigate("post_screen")
+                navigate("camera")
                 }) {
                 Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
                     contentDescription = null)

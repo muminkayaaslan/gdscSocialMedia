@@ -1,6 +1,5 @@
 package com.aslansoft.deneme
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -80,8 +79,8 @@ class MainActivity : ComponentActivity() {
                     composable("register_screen"){
                         RegisterScreen(navController = navController)
                     }
-                    composable("post_screen"){
-                        SendPostScreen(navController = navController)
+                    composable("post_screen/{uri}"){navBackStackEntry ->
+                        SendPostScreen(navController = navController,uri = navBackStackEntry.arguments?.getString("uri"))
                     }
                     composable("main_bottom_bar"){
                         MainBottomBar(navController = navController, context = LocalContext.current)
