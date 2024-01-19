@@ -195,7 +195,7 @@ fun RegisterScreen(navController: NavHostController) {
             OutlinedButton(onClick = {
 
                 if (userEmail.value.isNotEmpty()  &&  password.value.isNotEmpty() && username.value.isNotEmpty() && accessPassword.value.isNotEmpty()){
-                    if(userEmail.value.endsWith("@gmail.com")){
+                    if(userEmail.value.endsWith(".com")){
                         if (password.value == accessPassword.value){
                             if(password.value.length >= 6){
                                 auth.fetchSignInMethodsForEmail(userEmail.value).addOnCompleteListener { task ->

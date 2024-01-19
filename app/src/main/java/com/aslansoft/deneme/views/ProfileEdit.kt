@@ -1,7 +1,6 @@
 package com.aslansoft.deneme.views
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -45,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -135,9 +132,9 @@ fun ProfileEditScreen(navController: NavHostController) {
             }
             val multiplePermissionsLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions()
-            )  { permissions ->
+            ) { permissions ->
                 val myVersion = Build.VERSION.SDK_INT
-                if (myVersion <= Build.VERSION_CODES.S){
+                if (myVersion >= Build.VERSION_CODES.S) {
                     if (permissions[Manifest.permission.READ_MEDIA_IMAGES] == true) {
                         pickPhotoLauncher.launch("image/*")
                     } else {
@@ -147,10 +144,10 @@ fun ProfileEditScreen(navController: NavHostController) {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }else{
-                    if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true){
+                } else { // myVersion > Build.VERSION_CODES.R
+                    if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
                         pickPhotoLauncher.launch("image/*")
-                    }else{
+                    } else {
                         Toast.makeText(
                             context,
                             "Dosya Erişimi İçin İzin Vermelisin",
@@ -158,8 +155,6 @@ fun ProfileEditScreen(navController: NavHostController) {
                         ).show()
                     }
                 }
-
-
             }
 
 
@@ -209,7 +204,9 @@ fun ProfileEditScreen(navController: NavHostController) {
                         .align(Alignment.Center)
                         .clickable {
 
+                            val myVersion = Build.VERSION.SDK_INT
 
+                            if (myVersion >= Build.VERSION_CODES.S) {
                                 if (ContextCompat.checkSelfPermission(
                                         context,
                                         Manifest.permission.READ_MEDIA_IMAGES
@@ -219,6 +216,17 @@ fun ProfileEditScreen(navController: NavHostController) {
                                 } else {
                                     multiplePermissionsLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
                                 }
+                            } else {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    pickPhotoLauncher.launch("image/*")
+                                } else {
+                                    multiplePermissionsLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+                                }
+                            }
                         },painter = painter, contentDescription = "profilePhoto")
                 }
                 else{

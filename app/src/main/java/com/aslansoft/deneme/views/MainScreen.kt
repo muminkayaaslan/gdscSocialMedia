@@ -62,20 +62,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.aslansoft.deneme.R
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -148,7 +144,7 @@ fun MainScreen(navController: NavHostController) {
                     text = "Ana Sayfa", fontFamily = googleSans)}
                 , actions = {
 
-                    Badge(navController = navController, newMessageCount = 5)
+                    //Badge(navController = navController, newMessageCount = 5)
                        
                     }
 
@@ -190,7 +186,7 @@ fun MainScreen(navController: NavHostController) {
                             ) {
                                 Row (modifier = Modifier.fillMaxWidth()){
                                     Box(modifier = Modifier.size(30.dp)){
-                                        if (postData.profilePhoto.isNotEmpty() && postData.profilePhoto != null){
+                                        if (postData.profilePhoto.isNotEmpty()){
                                             val painter = rememberAsyncImagePainter(
                                                 ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
                                                     crossfade(true)
@@ -409,4 +405,3 @@ fun Badge(navController: NavHostController, newMessageCount: Int = 0) {
         }
 
     }
-

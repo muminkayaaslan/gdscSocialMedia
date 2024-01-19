@@ -299,7 +299,8 @@ fun ProfileScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .height(30.dp)
                         .clickable {
-                            navController.navigate("setting_screen")
+                            Toast.makeText(context,"Çok Yakında...",Toast.LENGTH_LONG).show()
+                            //navController.navigate("setting_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))
                         Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Filled.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))

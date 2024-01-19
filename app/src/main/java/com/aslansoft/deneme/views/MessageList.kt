@@ -1,9 +1,6 @@
 package com.aslansoft.deneme.views
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -22,27 +17,50 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.aslansoft.deneme.R
+import androidx.navigation.NavHostController
 import com.aslansoft.deneme.ui.theme.googleSans
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MessageList(navController: NavHostController) {
+    val db = Firebase.firestore
+    val myUsername = remember {
+        mutableStateOf("")
+    }
+    val auth = Firebase.auth
+    val currentUser = auth.currentUser
+    val email = currentUser?.email
 
+
+
+
+
+    //DATABASE
+    db.collection("users").document(email!!).get().addOnSuccessListener {
+        val data = it.data
+        myUsername.value = data?.get("username") as? String ?: ""
+    }
+    db.collection("conversation").get()
+    val documentId = listOf(myUsername.value,)
+    db.collection("conversation").document()
+
+
+
+
+    //USERINTERFACE
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary) {
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(modifier = Modifier
@@ -68,41 +86,8 @@ fun MessageList(navController: NavHostController) {
 
                 ))
             Spacer(modifier = Modifier.padding(vertical = 3.dp))
-            LazyColumn(modifier = Modifier.weight(1f)){
-                item {
-                    Spacer(modifier = Modifier.padding(vertical = 3.dp))
-                }
-                items(4){
-                    Row (
-                        Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .clickable {
-                                navController.navigate("chat_screen/${"ExampleUser"}")
-                            }
-                            .clip(RoundedCornerShape(10.dp)),){
-                        Box(modifier = Modifier.size(40.dp)){
-                            Image(modifier = Modifier.clip(CircleShape),bitmap = ImageBitmap.imageResource(R.drawable.numan) , contentScale = ContentScale.Crop, contentDescription = "numan")
-                        }
-                        if (isSystemInDarkTheme()){
-                            Column {
-                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "ExampleUser",color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
-                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "Hello", color = MaterialTheme.colorScheme.secondary)
-                            }
-                        }else{
-                            Column {
-                                Text(modifier = Modifier.padding(start = 3.dp,top = 2.dp),text = "ExamplUser",color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp, fontFamily = googleSans, fontWeight = FontWeight.Bold)
-                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp), text = "Hello", color = MaterialTheme.colorScheme.onPrimary)
-                            }
-                        }
 
 
-                    }
-                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
-                    SimpleLineDivider()
-                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
-                }
-            }
         }
     }
 }

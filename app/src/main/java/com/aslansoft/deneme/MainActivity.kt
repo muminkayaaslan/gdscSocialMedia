@@ -40,8 +40,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         FirebaseApp.initializeApp(this)
+
         setContent {
             DenemeTheme {
+
                 //Status Bar
                 val systemUiController = rememberSystemUiController()
                 if(isSystemInDarkTheme()){
@@ -54,19 +56,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 //Start Destination
-                val auth = FirebaseAuth.getInstance()
-                val startDestination = remember {
-                    mutableStateOf("")
-                }
-                if (auth.currentUser != null){
-                    startDestination.value = "main_screen"
-                }else{
-                    startDestination.value = "login_screen"
-                }
+
                 //Navigation Fragment
+
                 val navController  = rememberNavController()
                 NavHost(navController = navController,
-                    startDestination = startDestination.value,
+                    startDestination = "splash_screen",
                     enterTransition = { fadeIn(animationSpec = tween(0)) /*+ slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Start,tween(3000))*/},
                     exitTransition = { fadeOut(animationSpec = tween(0)) }){
@@ -111,9 +106,10 @@ class MainActivity : ComponentActivity() {
                     composable("userprofile/{username}"){backStackEntry ->
                         UserProfile(navController = navController,username = backStackEntry.arguments?.getString("username"))
                     }
+                    composable("splash_screen"){
+                        com.aslansoft.deneme.views.SplashScreen(navController = navController)
+                    }
                 }
-
-
             }
         }
     }

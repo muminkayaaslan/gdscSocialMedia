@@ -42,7 +42,6 @@ import com.google.firebase.storage.ktx.storage
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SendPostScreen(navController: NavHostController, uri: String?) {
     val post = remember {
