@@ -251,14 +251,24 @@ fun ProfileScreen(navController: NavHostController) {
                                             .size(25.dp)
                                             .padding(start = 3.dp, top = 3.dp, bottom = 2.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary))
                                     }
+                                    if (isSystemInDarkTheme()){
+                                        Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp, top = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
 
-                                    Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp, top = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
+                                    }else{
+                                        Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp, top = 2.dp),text = username.value, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
+
+                                    }
 
                                 }
                                 Row (modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 10.dp, bottom = 3.dp)){
-                                    Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+                                    if(isSystemInDarkTheme()){
+                                        Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+                                    }else{
+                                        Text(text = postData.post, color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
+
+                                    }
 
 
                                 }
@@ -276,7 +286,12 @@ fun ProfileScreen(navController: NavHostController) {
                                             contentScale = ContentScale.Crop,
                                             contentDescription = null
                                         )
-                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                                        if (isSystemInDarkTheme()){
+                                            Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                                        }else{
+                                            Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp , fontFamily = googleSans)
+
+                                        }
                                     }
                             }
                             }
@@ -299,7 +314,9 @@ fun ProfileScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .height(30.dp)
                         .clickable {
-                            Toast.makeText(context,"Çok Yakında...",Toast.LENGTH_LONG).show()
+                            Toast
+                                .makeText(context, "Çok Yakında...", Toast.LENGTH_LONG)
+                                .show()
                             //navController.navigate("setting_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))

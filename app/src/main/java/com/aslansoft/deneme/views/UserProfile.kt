@@ -1,8 +1,11 @@
 package com.aslansoft.deneme.views
 
+import android.provider.ContactsContract.Contacts.Photo
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +24,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,11 +56,19 @@ import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+data class UserPost(
+    val post: String,
+    val postPhoto: String,
+    val date: Timestamp,
+    val profilePhoto: String
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,40 +81,31 @@ fun UserProfile(navController: NavHostController, username: String?) {
         val db = Firebase.firestore
         val auth = Firebase.auth
         val currentUser = auth.currentUser
-        val username = remember { mutableStateOf("") }
-        val sheetState = rememberModalBottomSheetState()
-        var bottomSheetIsOpen by rememberSaveable { mutableStateOf(false) }
-        val myPostList = remember { mutableStateListOf<MyPost>() }
-        val post = remember { mutableStateOf("") }
-        val time = remember { mutableStateOf<Timestamp?>(null) }
+
+        val userPostList = remember { mutableStateListOf<UserPost>() }
         val isLoading= remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
         val context = LocalContext.current
 
-        currentUser?.email?.let {
 
-            db.collection("users").document(it).get().addOnSuccessListener {
-                val data = it.data
-                username.value = data?.get("username") as? String ?: ""
-                profilePhoto.value = data?.get("profilePhoto") as? String ?: ""
-            }
-        }
-        LaunchedEffect(username.value) {
+
+        LaunchedEffect(username) {
             isLoading.value = true
             db.collection("posts")
-                .whereEqualTo("username", username.value)
+                .whereEqualTo("username", username)
                 .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener { documents ->
-                    myPostList.clear() // Clear the list before adding new data
+                    userPostList.clear() // Clear the list before adding new data
                     for (document in documents) {
                         val postData: Map<String, Any> = document.data
                         val currentPost = postData["post"].toString()
                         val currentDate = postData["date"] as Timestamp?
                         val postPhoto = postData["post_url"].toString()
+                        val profilePhoto = postData["profile photo"].toString()
                         if (currentDate != null) {
-                            val myPost = MyPost(currentPost, postPhoto ,currentDate)
-                            myPostList.add(myPost)
+                            val userPost = UserPost(currentPost, postPhoto ,currentDate,profilePhoto)
+                            userPostList.add(userPost)
                         }
                     }
 
@@ -160,10 +164,10 @@ fun UserProfile(navController: NavHostController, username: String?) {
                 }
             }
 
-            Text(text = username.value , fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
+            username?.let { Text(text = it, fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans) }
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(30.dp))
-            if (myPostList.isEmpty() && !isLoading.value){
+            if (userPostList.isEmpty() && !isLoading.value){
                 if (isLoading.value) {
                     Box(
                         modifier = Modifier
@@ -192,19 +196,15 @@ fun UserProfile(navController: NavHostController, username: String?) {
             }
             else{
                 LazyColumn(modifier = Modifier.weight(1f)){
-                    items(myPostList.size){index ->
-                        val postData = myPostList[index]
-                        Column(modifier = Modifier
+                    items(userPostList.size){index ->
+                        val postData = userPostList[index]
+                        OutlinedCard(modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
-                            .padding(bottom = 3.dp)
-                            .background(
-                                MaterialTheme.colorScheme.onPrimary,
-                                RoundedCornerShape(10.dp)
-                            )
+                            .padding(bottom = 3.dp, end = 3.dp, start = 3.dp)
                             .clip(
                                 RoundedCornerShape(10.dp)
-                            ), verticalArrangement = Arrangement.Center) {
+                            ), border = BorderStroke(0.5.dp,MaterialTheme.colorScheme.onPrimary)
+                        ) {
                             val timestamp = postData.date.seconds + postData.date.nanoseconds / 1000000000
                             val dateData = Date(timestamp * 1000L)
                             val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
@@ -218,24 +218,73 @@ fun UserProfile(navController: NavHostController, username: String?) {
                                 else {
                                     Image(modifier = Modifier
                                         .size(25.dp)
-                                        .padding(start = 3.dp, top = 3.dp, bottom = 2.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null, colorFilter = ColorFilter.tint(
-                                        MaterialTheme.colorScheme.primary))
+                                        .padding(start = 3.dp, top = 3.dp, bottom = 2.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
                                 }
+                                if (isSystemInDarkTheme()){
+                                    username?.let {
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 3.dp,
+                                                bottom = 2.dp,
+                                                top = 2.dp
+                                            ),
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            fontWeight = FontWeight.Bold,
+                                            fontFamily = googleSans
+                                        )
+                                    }
 
-                                Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp, top = 2.dp),text = username.value, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontFamily = googleSans)
+                                }else{
+                                    if (username != null) {
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 3.dp,
+                                                bottom = 2.dp,
+                                                top = 2.dp
+                                            ),
+                                            text = username,
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontWeight = FontWeight.Bold,
+                                            fontFamily = googleSans
+                                        )
+                                    }
+
+                                }
 
                             }
                             Row (modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, bottom = 3.dp)){
-                                Column(modifier = Modifier.fillMaxWidth()) {
+                                if(isSystemInDarkTheme()){
                                     Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
+                                }else{
+                                    Text(text = postData.post, color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
 
                                 }
 
-                                Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
 
-                                    Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                            }
+
+
+                            Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
+
+                                if (postData.postPhoto.isNotEmpty()){
+                                    val painter = rememberAsyncImagePainter(model = postData.postPhoto)
+                                    Image(modifier = Modifier
+                                        .padding(vertical = 10.dp)
+                                        .size(300.dp)
+                                        .align(Alignment.CenterHorizontally),
+                                        painter = painter,
+                                        contentScale = ContentScale.Crop,
+                                        contentDescription = null
+                                    )
+                                    if (isSystemInDarkTheme()){
+                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp , fontFamily = googleSans)
+                                    }else{
+                                        Text(modifier = Modifier.padding(top = 6.dp, end = 7.dp), text = formattedDate, color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp , fontFamily = googleSans)
+
+                                    }
                                 }
                             }
                         }

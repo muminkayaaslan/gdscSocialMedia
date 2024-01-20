@@ -50,6 +50,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -73,6 +74,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.ui.theme.googleSans
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -92,14 +94,28 @@ fun MainScreen(navController: NavHostController) {
     val username = remember{ mutableStateOf("") }
     val postList = remember { mutableStateListOf<Post>() }
     val isLoading = remember { mutableStateOf(false) }
-    val alertDialogState = remember {
-        mutableStateOf(false)
-    }
+
     val postPhoto = remember {
         mutableStateOf("")
     }
     val userPP = remember {
         mutableStateOf("")
+    }
+    val auth = Firebase.auth
+    val currentUser = auth.currentUser
+    val myUserName = remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(currentUser?.email) {
+        currentUser?.email?.let { email ->
+            db.collection("users").document(email).get().addOnSuccessListener { documentSnapshot ->
+                val data = documentSnapshot.data
+                myUserName.value = data?.get("username") as? String ?: ""
+            }.addOnFailureListener { exception ->
+                println(exception.localizedMessage)
+                Toast.makeText(context, exception.localizedMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     Surface(
         Modifier
@@ -169,23 +185,23 @@ fun MainScreen(navController: NavHostController) {
                         }
                         items(postList.size){index ->
                             val postData = postList[index]
-
+                            val alertDialogState = remember {
+                                mutableStateOf(false)
+                            }
                             OutlinedCard(modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(3.dp)
-                                .clip(RoundedCornerShape(10.dp)).clickable {
-                                    if (username.value != postData.username){
-                                        navController.navigate("chat_screen/${postData.username}")
-                                    }else{
-                                        navController.navigate("profile_screen")
-                                    }
-
-                                }, colors = CardDefaults.outlinedCardColors(
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { alertDialogState.value = true }
+                                ,
+                                colors = CardDefaults.outlinedCardColors(
                                   contentColor = MaterialTheme.colorScheme.onPrimary
                                 ), border = BorderStroke(0.5.dp,color = MaterialTheme.colorScheme.onPrimary)
                             ) {
-                                Row (modifier = Modifier.fillMaxWidth()){
-                                    Box(modifier = Modifier.size(30.dp)){
+                                Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
+                                    Box(modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(start = 5.dp), contentAlignment = Alignment.TopStart){
                                         if (postData.profilePhoto.isNotEmpty()){
                                             val painter = rememberAsyncImagePainter(
                                                 ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
@@ -209,29 +225,16 @@ fun MainScreen(navController: NavHostController) {
 
                                         }
                                     }
-                                    if (postData.username != username.value){
-                                        if (alertDialogState.value){
-                                            AlertDialog(onDismissRequest = { alertDialogState.value = false }){
-                                                Button(modifier = Modifier.fillMaxWidth(),onClick = { navController.navigate("chat_screen/${postData.username}") }, colors = ButtonDefaults.buttonColors(
-                                                    contentColor = Color.Red,
-                                                    containerColor = MaterialTheme.colorScheme.onPrimary
-                                                )) {
-
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                    
-
                                     Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
                                     if (isSystemInDarkTheme()){
-                                        Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
                                     }else{
-                                        Text(modifier = Modifier.padding( top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
 
                                     }
-                                }
+                                    }
+
+
                                 if (isSystemInDarkTheme()){
                                     Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
                                 }else{
@@ -249,6 +252,88 @@ fun MainScreen(navController: NavHostController) {
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop
                                     )
+                                }
+                                if (myUserName.value != postData.username){
+
+                                    if (alertDialogState.value){
+                                        AlertDialog(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            onDismissRequest = {
+                                                alertDialogState.value = false
+                                            },
+                                            confirmButton = {
+                                                TextButton(
+                                                    onClick = {
+                                                        /*
+                                                        if (myUserName.value != postData.username){
+                                                            navController.navigate(
+                                                                "chat_screen/${postData.username}"
+                                                            )
+                                                        }*/
+
+                                                        Toast.makeText(context,"Çok Yakında...",Toast.LENGTH_SHORT).show()
+                                                    },
+                                                    colors = ButtonDefaults.textButtonColors(
+                                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                                    )
+                                                ) {
+                                                    Text(text = "Mesaj Gönder")
+                                                }
+                                            },
+                                            dismissButton = {
+                                                TextButton(onClick = {
+                                                    if (myUserName.value != postData.username){
+                                                        navController.navigate(
+
+                                                            "userprofile/${postData.username}"
+                                                        )
+                                                    }else{
+                                                        navController.navigate("profile_screen")
+                                                    }
+
+                                                },
+                                                    colors = ButtonDefaults.textButtonColors(
+                                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                                    )) {
+                                                    Text(text = "Profile Git")
+                                                }
+                                            },
+                                            icon = {
+
+                                                if (isSystemInDarkTheme()) {
+                                                    Icon(modifier = Modifier.size(50.dp),
+                                                        imageVector = Icons.Filled.Person,
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.secondary
+                                                    )
+                                                } else {
+                                                    Icon(modifier = Modifier.size(50.dp),
+                                                        imageVector = Icons.Filled.Person,
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.onPrimary
+                                                    )
+                                                }
+
+                                            },
+                                            title = {
+                                                if (isSystemInDarkTheme()) {
+                                                    Text(
+                                                        text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
+                                                        color = MaterialTheme.colorScheme.secondary
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
+                                                        color = MaterialTheme.colorScheme.onPrimary
+                                                    )
+
+                                                }
+
+                                            },
+
+                                            )
+                                    }
+
                                 }
 
                             }
