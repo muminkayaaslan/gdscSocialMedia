@@ -120,28 +120,35 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
                 ))
             Spacer(modifier = Modifier.padding(10.dp))
-            val postMap: HashMap<String,Any> = hashMapOf(
-                "post" to post.value,
-                "username" to username.value,
-                "date" to timestamp,
-                "profile photo" to profilePhoto.value,
-                "post_url" to photoUrl.value
-            )
+                val postMap: HashMap<String,Any> = hashMapOf(
+                    "post" to post.value,
+                    "username" to username.value,
+                    "date" to timestamp,
+                    "profile photo" to profilePhoto.value,
+                    "post_url" to photoUrl.value
+                )
+
+
 
             OutlinedButton(onClick = {
-                db.collection("posts")
-                    .add(postMap)
-                    .addOnCompleteListener{
-                        Toast.makeText(context,
-                            "Gönderi başarı ile paylaşıldı",
-                            Toast.LENGTH_SHORT).show()
-                        navController.navigate("main_screen")
-                    }.addOnFailureListener{
-                        println(it.localizedMessage)
-                        Toast.makeText(context,
-                            "Gönderi paylaşırken bir hata oluştu",
-                            Toast.LENGTH_LONG).show()
-                    }
+                if (photoUrl.value.isNotEmpty()){
+                    db.collection("posts")
+                        .add(postMap)
+                        .addOnCompleteListener{
+                            Toast.makeText(context,
+                                "Gönderi başarı ile paylaşıldı",
+                                Toast.LENGTH_SHORT).show()
+                            navController.navigate("main_screen")
+                        }.addOnFailureListener{
+                            println(it.localizedMessage)
+                            Toast.makeText(context,
+                                "Gönderi paylaşırken bir hata oluştu",
+                                Toast.LENGTH_LONG).show()
+                        }
+                }else{
+                    println("hata")
+                }
+
             }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {
                 Text(text = "Paylaş",
                     color = MaterialTheme.colorScheme.onPrimary,

@@ -1,12 +1,9 @@
 package com.aslansoft.deneme.views
 
-import android.provider.ContactsContract.Contacts.Photo
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,15 +26,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,9 +47,7 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
@@ -79,9 +70,6 @@ fun UserProfile(navController: NavHostController, username: String?) {
         ,color = MaterialTheme.colorScheme.primary
     ) {
         val db = Firebase.firestore
-        val auth = Firebase.auth
-        val currentUser = auth.currentUser
-
         val userPostList = remember { mutableStateListOf<UserPost>() }
         val isLoading= remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
@@ -102,10 +90,16 @@ fun UserProfile(navController: NavHostController, username: String?) {
                         val currentPost = postData["post"].toString()
                         val currentDate = postData["date"] as Timestamp?
                         val postPhoto = postData["post_url"].toString()
-                        val profilePhoto = postData["profile photo"].toString()
+                        val profilePhotom = postData["profile photo"].toString()
                         if (currentDate != null) {
-                            val userPost = UserPost(currentPost, postPhoto ,currentDate,profilePhoto)
+                            val userPost = UserPost(currentPost, postPhoto ,currentDate,profilePhotom)
                             userPostList.add(userPost)
+                        }
+                        // Update profilePhoto outside the loop
+                        if (documents.isEmpty) {
+                            println("dünya boştır lo")
+                        }else{
+                            profilePhoto.value = documents.first().data["profile photo"].toString()
                         }
                     }
 
@@ -118,12 +112,7 @@ fun UserProfile(navController: NavHostController, username: String?) {
                     // Set to true in case of failure
                 }
         }
-        val painter = rememberAsyncImagePainter(
-            ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value).apply(block = fun ImageRequest.Builder.() {
-                crossfade(true)
-                transformations(CircleCropTransformation())
-            }).build()
-        )
+
 
 
         Column(modifier = Modifier
@@ -149,6 +138,13 @@ fun UserProfile(navController: NavHostController, username: String?) {
                 .height(150.dp)
                 .align(Alignment.CenterHorizontally)){
                 if (profilePhoto.value.isNotEmpty()) {
+                    val painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value).apply(block = fun ImageRequest.Builder.() {
+                            crossfade(true)
+                            transformations(CircleCropTransformation())
+                        }).build()
+                    )
+
                     Image(
                         modifier = Modifier.fillMaxSize(),
                         painter = painter,
@@ -210,7 +206,14 @@ fun UserProfile(navController: NavHostController, username: String?) {
                             val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
                             val formattedDate = format.format(dateData)
                             Row (modifier = Modifier.fillMaxWidth()){
-                                if (profilePhoto.value.isNotEmpty()){
+                                if (postData.profilePhoto.isNotEmpty()){
+                                    val painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
+                                            crossfade(true)
+                                            transformations(CircleCropTransformation())
+                                        }).build()
+                                    )
+
                                     Image(modifier = Modifier
                                         .size(25.dp)
                                         .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)

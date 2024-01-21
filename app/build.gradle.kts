@@ -14,7 +14,7 @@ android {
         minSdk = 30
         //noinspection OldTargetApi
         targetSdk = 34
-        versionCode = 6
+        versionCode = 7
         versionName = "1.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -82,6 +82,8 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics:18.6.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+    implementation("com.google.firebase:firebase-database")
+
     //Navigation
     implementation ("androidx.navigation:navigation-compose:2.7.6")
     //Painter
