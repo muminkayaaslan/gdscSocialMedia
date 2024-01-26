@@ -1,6 +1,7 @@
 package com.aslansoft.deneme.views
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
@@ -40,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,8 +65,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -339,6 +344,32 @@ fun ProfileEditScreen(navController: NavHostController) {
                     }
                 )
             }
+            val scope = rememberCoroutineScope()
+            // Firestore'da belge güncellemesi yapacak fonksiyon
+                suspend fun updateUsername(username: String, newUsername: String) {
+                    try {
+                        // Belgeyi bul
+                        val querySnapshot = db.collection("posts")
+                            .whereEqualTo("username", username)
+                            .get()
+                            .await()
+
+                        // Belgeyi güncelle
+                        for (document in querySnapshot) {
+                            val belgeId = document.id
+                            db.collection("posts").document(belgeId)
+                                .update("username", newUsername)
+                                .await()
+
+                        }
+                    } catch (e: Exception) {
+                        // Hata durumunda buraya düşer
+                        e.printStackTrace()
+                    }
+                }
+
+
+
 
             Button(modifier = Modifier
                 .fillMaxWidth()
@@ -357,6 +388,9 @@ fun ProfileEditScreen(navController: NavHostController) {
                                           .document(it)
                                           .update(usernameUpdate as Map<String, Any>)
                                           .addOnSuccessListener {
+                                            scope.launch {
+                                                updateUsername(username.value,newUsername.value)
+                                            }
                                           Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
                                               navController.navigate("main_screen")
                                       }

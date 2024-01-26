@@ -131,22 +131,28 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
 
 
             OutlinedButton(onClick = {
+
                 if (photoUrl.value.isNotEmpty()){
-                    db.collection("posts")
-                        .add(postMap)
-                        .addOnCompleteListener{
-                            Toast.makeText(context,
-                                "Gönderi başarı ile paylaşıldı",
-                                Toast.LENGTH_SHORT).show()
-                            navController.navigate("main_screen")
-                        }.addOnFailureListener{
-                            println(it.localizedMessage)
-                            Toast.makeText(context,
-                                "Gönderi paylaşırken bir hata oluştu",
-                                Toast.LENGTH_LONG).show()
+                        if (username.value.isNotEmpty()){
+                            db.collection("posts")
+                                .add(postMap)
+                                .addOnCompleteListener{
+                                    Toast.makeText(context,
+                                        "Gönderi başarı ile paylaşıldı",
+                                        Toast.LENGTH_SHORT).show()
+                                    navController.navigate("main_screen")
+                                }.addOnFailureListener{
+                                    println(it.localizedMessage)
+                                    Toast.makeText(context,
+                                        "Gönderi paylaşırken bir hata oluştu",
+                                        Toast.LENGTH_LONG).show()
+                                }
+                        }else{
+                            println("hata: username")
                         }
+
                 }else{
-                    println("hata")
+                    println("hata:photoUrl")
                 }
 
             }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {

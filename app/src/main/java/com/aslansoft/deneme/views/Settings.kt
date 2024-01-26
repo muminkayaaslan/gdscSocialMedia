@@ -1,6 +1,5 @@
 package com.aslansoft.deneme.views
 
-import android.content.ClipData.Item
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -85,16 +84,53 @@ fun Settings(navController: NavHostController) {
                 item {
                     Row (modifier = Modifier.fillMaxWidth()){
                         Text(text = "Bildirimler")
-                        Switch(checked = switchState.value, onCheckedChange = {
-                            switchState.value = it
-                        })
+                        Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd){
+                            Switch(checked = switchState.value, onCheckedChange = {
+                                switchState.value = it
+                            })
+                        }
                     }
                     Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
                 }
-                item { /*TODO*/ }
-                item { /*TODO*/ }
-                item { /*TODO*/ }
-                item { /*TODO*/ }
+
+
+
+                item {     Row (modifier = Modifier.fillMaxWidth()){
+                    Text(text = "Bildirimler")
+                    Switch(checked = switchState.value, onCheckedChange = {
+                        switchState.value = it
+                    })
+                }
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
+
+
+
+                item {     Row (modifier = Modifier.fillMaxWidth()){
+                    Text(text = "Bildirimler")
+                    Switch(checked = switchState.value, onCheckedChange = {
+                        switchState.value = it
+                    })
+                }
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
+
+
+                item {     Row (modifier = Modifier.fillMaxWidth()){
+                    Text(text = "Bildirimler")
+                    Switch(checked = switchState.value, onCheckedChange = {
+                        switchState.value = it
+                    })
+                }
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
+
+
+                item {     Row (modifier = Modifier.fillMaxWidth()){
+                    Text(text = "Bildirimler")
+                    Switch(checked = switchState.value, onCheckedChange = {
+                        switchState.value = it
+                    })
+                }
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
+
             }
             Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
