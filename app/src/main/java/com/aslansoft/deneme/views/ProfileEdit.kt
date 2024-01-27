@@ -344,29 +344,6 @@ fun ProfileEditScreen(navController: NavHostController) {
                     }
                 )
             }
-            val scope = rememberCoroutineScope()
-            // Firestore'da belge güncellemesi yapacak fonksiyon
-                suspend fun updateUsername(username: String, newUsername: String) {
-                    try {
-                        // Belgeyi bul
-                        val querySnapshot = db.collection("posts")
-                            .whereEqualTo("username", username)
-                            .get()
-                            .await()
-
-                        // Belgeyi güncelle
-                        for (document in querySnapshot) {
-                            val belgeId = document.id
-                            db.collection("posts").document(belgeId)
-                                .update("username", newUsername)
-                                .await()
-
-                        }
-                    } catch (e: Exception) {
-                        // Hata durumunda buraya düşer
-                        e.printStackTrace()
-                    }
-                }
 
 
 
@@ -388,11 +365,16 @@ fun ProfileEditScreen(navController: NavHostController) {
                                           .document(it)
                                           .update(usernameUpdate as Map<String, Any>)
                                           .addOnSuccessListener {
-                                            scope.launch {
-                                                updateUsername(username.value,newUsername.value)
-                                            }
-                                          Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
-                                              navController.navigate("main_screen")
+                                              db.collection("posts").whereEqualTo("username",username.value).get()
+                                                  .addOnSuccessListener {documents ->
+                                                      for (document in documents){
+                                                          db.collection("posts").document(document.id).update("username",newUsername.value).addOnSuccessListener {
+                                                              Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
+                                                              navController.navigate("main_screen")
+                                                          }
+                                                      }
+
+                                                  }
                                       }
                                           .addOnFailureListener {exception ->
                                               println(exception.message)
@@ -437,8 +419,16 @@ fun ProfileEditScreen(navController: NavHostController) {
                                               .document(it)
                                               .update(usernameUpdate as Map<String, Any>)
                                               .addOnSuccessListener {
-                                                  Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
-                                                  navController.navigate("main_screen")
+                                                  db.collection("posts").get().addOnSuccessListener { documents ->
+                                                      for (document in documents){
+                                                          db.collection("posts").document(document.id).update("username",newUsername.value).addOnSuccessListener {
+                                                              Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
+                                                              navController.navigate("main_screen")
+                                                          }
+                                                      }
+
+                                                  }
+
                                               }
                                               .addOnFailureListener { exception ->
                                                   println(exception.message)
