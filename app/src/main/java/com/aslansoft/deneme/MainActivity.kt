@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
                 val navController  = rememberNavController()
                 NavHost(navController = navController,
-                    startDestination = "splash_screen",
+                    startDestination = "setting_screen",
                     enterTransition = { fadeIn(animationSpec = tween(0)) /*+ slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Start,tween(3000))*/},
                     exitTransition = { fadeOut(animationSpec = tween(0)) }){

@@ -1,6 +1,7 @@
 package com.aslansoft.deneme.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -22,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
@@ -31,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
@@ -80,14 +88,49 @@ fun Settings(navController: NavHostController) {
             val switchState = remember {
                 mutableStateOf(false)
             }
+
             LazyColumn{
                 item {
-                    Row (modifier = Modifier.fillMaxWidth()){
-                        Text(text = "Bildirimler")
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .align(Alignment.CenterHorizontally)){
+                        Icon(modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                           ,imageVector = Icons.Filled.Notifications, contentDescription = null )
+                        Text(modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            ,text = "Bildirimler")
                         Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd){
                             Switch(checked = switchState.value, onCheckedChange = {
                                 switchState.value = it
-                            })
+                            },
+                                colors = SwitchDefaults.colors(
+                                    checkedBorderColor = Color.Transparent,
+                                    checkedIconColor = MaterialTheme.colorScheme.secondary,
+                                    uncheckedBorderColor = Color.Transparent,
+                                    checkedTrackColor = MaterialTheme.colorScheme.onPrimary,
+                                    checkedThumbColor = Color.Red
+
+                                ),
+                                thumbContent =if (switchState.value) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                } else {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Clear,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+
+                                })
                         }
                     }
                     Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
@@ -95,41 +138,37 @@ fun Settings(navController: NavHostController) {
 
 
 
-                item {     Row (modifier = Modifier.fillMaxWidth()){
-                    Text(text = "Bildirimler")
-                    Switch(checked = switchState.value, onCheckedChange = {
-                        switchState.value = it
-                    })
+                item {     Row (modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)){
+                    Icon(modifier = Modifier
+                        .align(Alignment.CenterVertically),
+                        imageVector = Icons.Filled.Call, contentDescription = null)
+                    Text(modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        ,text = "Bize Ulaşın")
                 }
                     Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
 
 
 
-                item {     Row (modifier = Modifier.fillMaxWidth()){
-                    Text(text = "Bildirimler")
-                    Switch(checked = switchState.value, onCheckedChange = {
-                        switchState.value = it
-                    })
+                item {
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)){
+                    Icon(modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                       ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
+                    Text(modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        ,text = "Davet Edin")
+
                 }
                     Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
 
 
-                item {     Row (modifier = Modifier.fillMaxWidth()){
-                    Text(text = "Bildirimler")
-                    Switch(checked = switchState.value, onCheckedChange = {
-                        switchState.value = it
-                    })
-                }
-                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
 
 
-                item {     Row (modifier = Modifier.fillMaxWidth()){
-                    Text(text = "Bildirimler")
-                    Switch(checked = switchState.value, onCheckedChange = {
-                        switchState.value = it
-                    })
-                }
-                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
 
             }
             Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
