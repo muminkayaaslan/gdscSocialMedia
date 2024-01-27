@@ -125,7 +125,14 @@ fun ProfileEditScreen(navController: NavHostController) {
                                     db.collection("users").document(userEmail)
                                         .update("profilePhoto" , downloadUrl.value)
                                         .addOnSuccessListener {
-                                            Toast.makeText(context, "Profil Fotoğrafı Başarıyla Güncellendi", Toast.LENGTH_LONG).show()
+                                            db.collection("posts").whereEqualTo("username",username.value).get().addOnSuccessListener { documents ->
+                                                for (document in documents){
+                                                    db.collection("posts").document(document.id).update("profile photo",downloadUrl.value).addOnSuccessListener {
+                                                        Toast.makeText(context, "Profil Fotoğrafı Başarıyla Güncellendi", Toast.LENGTH_LONG).show()
+                                                    }
+                                                }
+
+                                            }
                                         }
                                         .addOnFailureListener { e ->
                                             println("Firestore Güncelleme Hatası: $e")
