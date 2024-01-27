@@ -1,7 +1,12 @@
 package com.aslansoft.deneme.views
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -66,6 +71,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -300,7 +306,7 @@ fun ProfileScreen(navController: NavHostController) {
                     }
                 }
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom , horizontalAlignment = Alignment.CenterHorizontally) {
-                ProfileBottomBar(navController = navController)
+                ProfileBottomBar(navController = navController, context = context)
             }
         }
         // Alttan açılan Menü
@@ -379,8 +385,23 @@ fun ProfileScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ProfileBottomBar(navController: NavHostController?) {
+fun ProfileBottomBar(navController: NavHostController?,context: Context) {
+    val cameraGranted = remember {
+        mutableStateOf(false)
+    }
 
+    cameraGranted.value = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
+    val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()){ isGranted ->
+        if (isGranted){
+            cameraGranted.value = true
+
+        }else{
+            Toast.makeText(context,"Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",Toast.LENGTH_LONG).show()
+        }
+
+    }
 
     NavigationBar(modifier = Modifier
         .height(60.dp)
@@ -418,8 +439,12 @@ fun ProfileBottomBar(navController: NavHostController?) {
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = Color.White),
-                onClick = { navController?.
-                navigate("camera")
+                onClick = {
+                if (!cameraGranted.value){
+                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                }else{
+                    navController?.navigate("camera")
+                }
                 }) {
                 Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
                     contentDescription = null)

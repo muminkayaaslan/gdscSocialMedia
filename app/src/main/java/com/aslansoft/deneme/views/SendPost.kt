@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.aslansoft.deneme.views
 
 
@@ -5,15 +7,11 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
@@ -87,14 +84,20 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                     val formattedDate = dateFormat.format(timestamp)
                     val fileName = "${username.value}_${formattedDate}"
                     val storageRef = storage.reference.child("posts/${username.value}/$fileName")
-                    storageRef.putFile(uri.toUri())
-                        .addOnSuccessListener {taskSnapShots ->
-                            storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
-                               photoUrl.value = imageUrl.toString()
 
+                        storageRef.putFile(uri.toUri())
+                            .addOnSuccessListener {taskSnapShots ->
+                                storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
+                                    photoUrl.value = imageUrl.toString()
+
+                                }
+
+                            }.addOnFailureListener {
+                                println(it.message)
                             }
-
-                        }
+                    }else{
+                        println("photouri" + uri)
+                    }
                 }
             //Fotoğrafı Storage'a gönderme
 
@@ -133,7 +136,9 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
             OutlinedButton(onClick = {
 
                 if (photoUrl.value.isNotEmpty()){
+
                         if (username.value.isNotEmpty()){
+
                             db.collection("posts")
                                 .add(postMap)
                                 .addOnCompleteListener{
@@ -163,4 +168,3 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
         }
 
     }
-}
