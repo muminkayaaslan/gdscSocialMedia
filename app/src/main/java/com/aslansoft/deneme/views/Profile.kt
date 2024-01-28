@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.aslansoft.deneme.views
 
 import android.Manifest
@@ -29,10 +31,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -320,13 +323,11 @@ fun ProfileScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .height(30.dp)
                         .clickable {
-                            Toast
-                                .makeText(context, "Çok Yakında...", Toast.LENGTH_LONG)
-                                .show()
-                            //navController.navigate("setting_screen")
+                            bottomSheetIsOpen = false
+                            navController.navigate("setting_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Filled.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
+                        Image(modifier = Modifier.fillMaxHeight(),imageVector = Icons.Outlined.Settings, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(modifier = Modifier
                             .fillMaxHeight()
@@ -342,7 +343,7 @@ fun ProfileScreen(navController: NavHostController) {
                             navController.navigate("profileEdit_screen")
                         }){
                         Spacer(modifier = Modifier.padding(10.dp))
-                        Image(modifier =  Modifier.fillMaxHeight(),imageVector = Icons.Filled.AccountCircle, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
+                        Image(modifier =  Modifier.fillMaxHeight(),imageVector = Icons.Outlined.AccountCircle, contentDescription = null , colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary))
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(modifier = Modifier
                             .fillMaxHeight()
@@ -421,7 +422,7 @@ fun ProfileBottomBar(navController: NavHostController?,context: Context) {
         NavigationBarItem(selected = false,
             onClick = { navController?.navigate("main_screen") },
             icon = { Icon(
-                imageVector = Icons.Filled.Home,
+                imageVector = Icons.Outlined.Home,
                 contentDescription = null) },
             colors = NavigationBarItemDefaults
                 .colors(selectedIconColor = Color.White,
@@ -473,7 +474,7 @@ fun ProfileBottomBar(navController: NavHostController?,context: Context) {
             onClick = { navController?.
             navigate("profile_screen") },
             icon = { Icon(
-                imageVector = Icons.Filled.Person,
+                imageVector = Icons.Outlined.Person,
                 contentDescription = null
             ) },colors = NavigationBarItemDefaults
                 .colors(selectedIconColor = Color.White,

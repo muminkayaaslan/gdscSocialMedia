@@ -1,5 +1,7 @@
 package com.aslansoft.deneme.views
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,17 +17,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -41,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +56,9 @@ import com.aslansoft.deneme.ui.theme.googleSans
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(navController: NavHostController) {
-
+    val sheetState = remember {
+        mutableStateOf(false)
+    }
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary) {
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(modifier = Modifier
@@ -88,7 +95,7 @@ fun Settings(navController: NavHostController) {
             val switchState = remember {
                 mutableStateOf(false)
             }
-
+            val contextInsta = LocalContext.current
             LazyColumn{
                 item {
                     Row (modifier = Modifier
@@ -97,10 +104,10 @@ fun Settings(navController: NavHostController) {
                         .align(Alignment.CenterHorizontally)){
                         Icon(modifier = Modifier
                             .align(Alignment.CenterVertically)
-                           ,imageVector = Icons.Filled.Notifications, contentDescription = null )
+                           ,imageVector = Icons.Outlined.Notifications, contentDescription = null )
                         Text(modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            ,text = "Bildirimler")
+                            ,text = "Bildirimler", fontFamily = googleSans)
                         Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd){
                             Switch(checked = switchState.value, onCheckedChange = {
                                 switchState.value = it
@@ -138,18 +145,22 @@ fun Settings(navController: NavHostController) {
 
 
 
-                item {     Row (modifier = Modifier
+                item {
+                    Row (modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)){
+                    .height(50.dp)
+                    .clickable {
+                        sheetState.value = true
+                    }){
                     Icon(modifier = Modifier
                         .align(Alignment.CenterVertically),
-                        imageVector = Icons.Filled.Call, contentDescription = null)
+                        imageVector = Icons.Outlined.Call, contentDescription = null)
                     Text(modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        ,text = "Bize Ulaşın")
+                        ,text = "Bize Ulaşın", fontFamily = googleSans)
                 }
-                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
-
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
+                }
 
 
                 item {
@@ -158,19 +169,96 @@ fun Settings(navController: NavHostController) {
                         .height(50.dp)){
                     Icon(modifier = Modifier
                         .align(Alignment.CenterVertically)
-                       ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
+                       ,imageVector = Icons.Outlined.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
                     Text(modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        ,text = "Davet Edin")
+                        ,text = "Davet Edin", fontFamily = googleSans)
 
                 }
-                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary) }
+                    Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
+                }
 
+               item {
+                   Row (modifier = Modifier
+                       .fillMaxWidth()
+                       .height(50.dp).clickable {
+                           val wpUri = Uri.parse("https://docs.google.com/document/d/10DPHfIqJ5liYS_SBtnMIb43Efkyo_Uoz3zGwk2UtrQc/edit?usp=drive_link")
+                           val intent = Intent(Intent.ACTION_VIEW, wpUri)
 
+                           intent.setPackage("com.google.android.apps.docs")
 
+                           try {
+                               contextInsta.startActivity(intent)
+                           } catch (e: Exception) {
+                               contextInsta.startActivity(
+                                   Intent(
+                                       Intent.ACTION_VIEW,
+                                       Uri.parse("https://docs.google.com/document/d/10DPHfIqJ5liYS_SBtnMIb43Efkyo_Uoz3zGwk2UtrQc/edit?usp=drive_link"))
+                               )
+                           }
+                       }){
+                       Icon(modifier = Modifier
+                           .align(Alignment.CenterVertically)
+                           ,imageVector = Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
+                       Text(modifier = Modifier
+                           .align(Alignment.CenterVertically)
+                           ,text = "Kullanıcı Ve Gizlilik Sözleşmesi", fontFamily = googleSans)
 
-
+                   }
+                   Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
+               }
             }
+
+            if (sheetState.value){
+                ModalBottomSheet(onDismissRequest = { sheetState.value = false }) {
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(start = 10.dp).clickable {
+                            val wpUri = Uri.parse("https://whatsapp.com/channel/0029Va7kPQzHbFVBS1vbcj40")
+                            val intent = Intent(Intent.ACTION_VIEW, wpUri)
+
+                            intent.setPackage("com.whatsapp")
+
+                            try {
+                                contextInsta.startActivity(intent)
+                            } catch (e: Exception) {
+                                contextInsta.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://whatsapp.com/channel/0029Va7kPQzHbFVBS1vbcj40"))
+                                )
+                            }
+                        }, verticalAlignment = Alignment.CenterVertically){
+                        Icon(modifier = Modifier.size(40.dp),bitmap = ImageBitmap.imageResource(R.drawable.whatsapp), contentDescription = null )
+                        Text(modifier = Modifier.padding(start = 5.dp),text = "WhatsApp", fontFamily = googleSans)
+                    }
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(start = 10.dp).clickable {
+                            val instagramUri = Uri.parse("https://www.instagram.com/gdscyobu?igsh=eWU2aThlcTV1Znhs")
+                            val intent = Intent(Intent.ACTION_VIEW, instagramUri)
+
+                            intent.setPackage("com.instagram.android")
+
+                            try {
+                                contextInsta.startActivity(intent)
+                            } catch (e: Exception) {
+                                contextInsta.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://www.instagram.com/gdscyobu?igsh=eWU2aThlcTV1Znhs"))
+                                )
+                            }
+                        }, verticalAlignment = Alignment.CenterVertically){
+                        Icon(modifier = Modifier.size(30.dp),bitmap = ImageBitmap.imageResource(R.drawable.instagram), contentDescription = null )
+                        Text(modifier = Modifier.padding(start = 5.dp),text = "Instagram", fontFamily = googleSans)
+                    }
+                    Spacer(modifier = Modifier.padding(vertical = 15.dp))
+                }
+            }
+
             Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onPrimary)
                 Spacer(modifier = Modifier.padding(vertical = 1.dp))
@@ -181,3 +269,4 @@ fun Settings(navController: NavHostController) {
         }
     }
 }
+

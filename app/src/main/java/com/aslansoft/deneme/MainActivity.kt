@@ -15,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aslansoft.deneme.ui.theme.DenemeTheme
-import com.aslansoft.deneme.views.Badge
 import com.aslansoft.deneme.views.Camera
 import com.aslansoft.deneme.views.LoginScreen
 import com.aslansoft.deneme.views.MainBottomBar
@@ -84,9 +83,6 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("profileEdit_screen"){
                         ProfileEditScreen(navController = navController)
-                    }
-                    composable("badge"){
-                        Badge(navController = navController)
                     }
                     composable("camera"){
                         Camera(navController = navController)
