@@ -10,8 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,11 +17,9 @@ import androidx.navigation.compose.rememberNavController
 import com.aslansoft.deneme.ui.theme.DenemeTheme
 import com.aslansoft.deneme.views.Badge
 import com.aslansoft.deneme.views.Camera
-import com.aslansoft.deneme.views.ChatScreen
 import com.aslansoft.deneme.views.LoginScreen
 import com.aslansoft.deneme.views.MainBottomBar
 import com.aslansoft.deneme.views.MainScreen
-import com.aslansoft.deneme.views.MessageList
 import com.aslansoft.deneme.views.ProfileEditScreen
 import com.aslansoft.deneme.views.ProfileScreen
 import com.aslansoft.deneme.views.RegisterScreen
@@ -32,7 +28,6 @@ import com.aslansoft.deneme.views.Settings
 import com.aslansoft.deneme.views.UserProfile
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -83,19 +78,12 @@ class MainActivity : ComponentActivity() {
                     composable("profile_screen"){
                         ProfileScreen(navController = navController)
                     }
-                    composable("massagelist_screen"){
-                        MessageList(navController = navController)
-                    }
+
                     composable("setting_screen"){
                         Settings(navController = navController)
                     }
                     composable("profileEdit_screen"){
                         ProfileEditScreen(navController = navController)
-                    }
-                    composable("chat_screen/{username}", enterTransition = { fadeIn(animationSpec = tween(0)) /*+ slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start,tween(3000))*/},
-                        exitTransition = { fadeOut(animationSpec = tween(0)) }){ backStackEntry ->
-                        ChatScreen(navController = navController,username = backStackEntry.arguments?.getString("username"))
                     }
                     composable("badge"){
                         Badge(navController = navController)

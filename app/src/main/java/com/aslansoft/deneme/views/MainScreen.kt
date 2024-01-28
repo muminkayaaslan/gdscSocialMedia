@@ -262,25 +262,6 @@ fun MainScreen(navController: NavHostController) {
                                                 alertDialogState.value = false
                                             },
                                             confirmButton = {
-                                                TextButton(
-                                                    onClick = {
-                                                        /*
-                                                        if (myUserName.value != postData.username){
-                                                            navController.navigate(
-                                                                "chat_screen/${postData.username}"
-                                                            )
-                                                        }*/
-
-                                                        Toast.makeText(context,"Çok Yakında...",Toast.LENGTH_SHORT).show()
-                                                    },
-                                                    colors = ButtonDefaults.textButtonColors(
-                                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                                    )
-                                                ) {
-                                                    Text(text = "Mesaj Gönder")
-                                                }
-                                            },
-                                            dismissButton = {
                                                 TextButton(onClick = {
                                                     if (myUserName.value != postData.username){
                                                         navController.navigate(
