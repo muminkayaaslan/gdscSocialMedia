@@ -84,7 +84,7 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                     val formattedDate = dateFormat.format(timestamp)
                     val fileName = "${username.value}_${formattedDate}"
                     val storageRef = storage.reference.child("posts/${username.value}/$fileName")
-
+                    if(username.value.isNotEmpty()){
                         storageRef.putFile(uri.toUri())
                             .addOnSuccessListener {taskSnapShots ->
                                 storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
@@ -95,12 +95,17 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                             }.addOnFailureListener {
                                 println(it.message)
                             }
+                    }
+
+
+
+
+
+
+
                     }else{
                         println("photouri" + uri)
                     }
-                }
-            //Fotoğrafı Storage'a gönderme
-
             Spacer(modifier = Modifier.padding(vertical = 3.dp))
 
             OutlinedTextField(value = post.value,
@@ -123,19 +128,20 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary
                 ))
             Spacer(modifier = Modifier.padding(10.dp))
-                val postMap: HashMap<String,Any> = hashMapOf(
-                    "post" to post.value,
-                    "username" to username.value,
-                    "date" to timestamp,
-                    "profile photo" to profilePhoto.value,
-                    "post_url" to photoUrl.value
-                )
+            val posted = post.value.trim()
+            val postMap: HashMap<String,Any> = hashMapOf(
+                "post" to posted,
+                "username" to username.value,
+                "date" to timestamp,
+                "profile photo" to profilePhoto.value,
+                "post_url" to photoUrl.value
+            )
 
 
 
             OutlinedButton(onClick = {
-
-                if (photoUrl.value.isNotEmpty()){
+                if (posted.isNotEmpty()){
+                    if (photoUrl.value.isNotEmpty()){
 
                         if (username.value.isNotEmpty()){
 
@@ -156,15 +162,23 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                             println("hata: username")
                         }
 
+                    }else{
+                        println("hata:photoUrl")
+                    }
                 }else{
-                    println("hata:photoUrl")
+                    Toast.makeText(context,"Lütfen Durum Yazın",Toast.LENGTH_SHORT).show()
                 }
+
 
             }, border = BorderStroke(1.dp,MaterialTheme.colorScheme.onPrimary)) {
                 Text(text = "Paylaş",
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontFamily = googleSans)
             }
+                }
+            //Fotoğrafı Storage'a gönderme
+
+
         }
 
     }
