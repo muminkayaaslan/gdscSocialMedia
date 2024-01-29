@@ -5,6 +5,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,10 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,12 +39,15 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -61,6 +67,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -143,21 +150,18 @@ fun MainScreen(navController: NavHostController) {
          }
 
 
-
+        val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
+                .background(gradient, RoundedCornerShape(bottomStart = 5.dp, bottomEnd = 5.dp))
                 .clip(
-                    RoundedCornerShape(
-                        bottomStart = 10.dp,
-                        bottomEnd = 10.dp,
-                        topStart = 10.dp,
-                        topEnd = 10.dp
+                    RoundedCornerShape(10.dp
                     )
                 ),
                 title = { Text(modifier = Modifier.
                 padding(top = 12.dp),
-                    text = "Ana Sayfa", fontFamily = googleSans)}
+                    text = "GDSC", fontFamily = googleSans)}
                 , actions = {
 
                     //Badge(navController = navController, newMessageCount = 5)
@@ -165,9 +169,10 @@ fun MainScreen(navController: NavHostController) {
                     }
 
                 ,colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
-                    titleContentColor = MaterialTheme.colorScheme.secondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.secondary
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.DarkGray,
+                    actionIconContentColor = Color.Transparent,
+
 
                 ))
 
@@ -188,20 +193,28 @@ fun MainScreen(navController: NavHostController) {
                             val alertDialogState = remember {
                                 mutableStateOf(false)
                             }
-                            OutlinedCard(modifier = Modifier
+                            ElevatedCard(
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 6.dp
+                                ),
+                                modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(3.dp)
-                                .clip(RoundedCornerShape(10.dp))
                                 .clickable { alertDialogState.value = true }
                                 ,
-                                colors = CardDefaults.outlinedCardColors(
-                                  contentColor = MaterialTheme.colorScheme.onPrimary
-                                ), border = BorderStroke(0.5.dp,color = MaterialTheme.colorScheme.onPrimary)
+                                colors = CardDefaults.elevatedCardColors(
+                                  contentColor = Color.Gray,
+                                ),
+                                shape = RoundedCornerShape(24.dp)
+
                             ) {
+
                                 Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
                                     Box(modifier = Modifier
-                                        .size(40.dp)
-                                        .padding(start = 5.dp), contentAlignment = Alignment.TopStart){
+                                        .size(50.dp)
+                                        .padding(5.dp)
+                                        .border(BorderStroke(0.5.dp, Color.Gray), CircleShape)
+                                        , contentAlignment = Alignment.TopStart){
                                         if (postData.profilePhoto.isNotEmpty()){
                                             val painter = rememberAsyncImagePainter(
                                                 ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
@@ -211,23 +224,25 @@ fun MainScreen(navController: NavHostController) {
                                             )
                                             Image(modifier = Modifier
                                                 .fillMaxSize()
-                                                .padding(start = 2.dp, top = 2.dp),painter = painter, contentDescription = null )
+                                                .clip(CircleShape)
+                                             ,painter = painter, contentDescription = null)
+
                                         }else{
                                             if (isSystemInDarkTheme()){
                                                 Icon(modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                                    ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                                             }else{
                                                 Icon(modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(start = 2.dp, top = 2.dp),imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                                   ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                                             }
 
                                         }
                                     }
                                     Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
                                     if (isSystemInDarkTheme()){
-                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.Gray, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
                                     }else{
                                         Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
 
@@ -247,7 +262,8 @@ fun MainScreen(navController: NavHostController) {
                                     Image(modifier = Modifier
                                         .size(300.dp)
                                         .padding(5.dp)
-                                        .align(Alignment.CenterHorizontally),
+                                        .align(Alignment.CenterHorizontally)
+                                        .clip(RoundedCornerShape(18.dp)),
                                         painter = painter,
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop
@@ -343,131 +359,99 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun MainBottomBar(navController: NavHostController?,context: Context) {
-
+    val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
     val cameraGranted = remember {
         mutableStateOf(false)
     }
 
-    cameraGranted.value = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+    cameraGranted.value = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
 
     val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()){ isGranted ->
-        if (isGranted){
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
             cameraGranted.value = true
 
-        }else{
-            Toast.makeText(context,"Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(
+                context,
+                "Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
     }
-    NavigationBar(modifier = Modifier
-        .height(60.dp)
-        .padding(bottom = 10.dp)
-        .background(shape = RoundedCornerShape(10.dp), color = Color.Transparent)
-        .clip(
-            RoundedCornerShape(
-                10.dp
+    Box(modifier = Modifier.height(80.dp).background(Color.Transparent), contentAlignment = Alignment.TopCenter) {
+        NavigationBar(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(gradient, RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(10.dp)),
+            containerColor = Color.Transparent,
+            contentColor = Color.Transparent
+        ) {
+
+            //ana ekran butonu
+            NavigationBarItem(
+                selected = true,
+                onClick = { navController?.navigate("main_screen") },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Home,
+                        contentDescription = null
+                    )
+                },
+                colors = NavigationBarItemDefaults
+                    .colors(
+                        selectedIconColor = MaterialTheme.colorScheme.secondary,
+                        unselectedTextColor = Color.Gray,
+                        indicatorColor = MaterialTheme.colorScheme.onPrimary
+                    )
             )
-        ),
-        containerColor = MaterialTheme.colorScheme.onPrimary,
-        contentColor = MaterialTheme.colorScheme.onTertiary
-        ){
 
-
-        //ana ekran butonu
-        NavigationBarItem(selected = true,
-            onClick = { navController?.navigate("main_screen") },
-            icon = { Icon(
-            imageVector = Icons.Filled.Home,
-            contentDescription = null) },
-            colors = NavigationBarItemDefaults
-                .colors(selectedIconColor = MaterialTheme.colorScheme.secondary,
-                    unselectedTextColor = Color.Gray,
-                    indicatorColor = MaterialTheme.colorScheme.onPrimary)
-        )
-
-
-        val googleBlue = Color(99, 154, 245, 255)
-        if (isSystemInDarkTheme()){
-            Button(modifier = Modifier
-                .size(80.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = Color.White),
+            //Profil ekranına yönlendiren buton
+            NavigationBarItem(selected = false,
                 onClick = {
-                    if (!cameraGranted.value){
-                        requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
-                    }else{
-                        navController?.navigate("camera")
-                    }
-
-
-
-                }) {
-                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
-                    contentDescription = null)
-            }
-        }else{
-            Button(modifier = Modifier
-                .size(80.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ),
-                colors = ButtonDefaults.buttonColors(containerColor = googleBlue,
-                    contentColor = Color.White),
-                onClick = { navController?.
-                navigate("camera")
-                }) {
-                Icon(modifier = Modifier.size(100.dp),imageVector = Icons.Filled.Add,
-                    contentDescription = null)
-            }
-        }
-
-
-        //Profil ekranına yönlendiren buton
-        NavigationBarItem(selected = false ,
-            onClick = { navController?.
-        navigate("profile_screen") },
-            icon = { Icon(
-            imageVector = Icons.Filled.Person,
-            contentDescription = null
-        ) },colors = NavigationBarItemDefaults.run {
-                colors(unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                    navController?.navigate("profile_screen")
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = null
+                    )
+                }, colors = NavigationBarItemDefaults.run {
+                    colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
                         disabledIconColor = MaterialTheme.colorScheme.onSecondary
-                        )
-            })
-    }
-
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Badge(navController: NavHostController, newMessageCount: Int = 0) {
-        Box(modifier = Modifier
-            .size(40.dp)
-            .clickable {
-                navController
-                    .navigate("massagelist_screen")
-            }){
-            Image(modifier = Modifier
-                .size(40.dp)
-                .padding(top = 10.dp)
-                ,imageVector = Icons.Filled.Send, contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary))
-            BadgedBox(modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(35.dp)
-                .padding(top = 15.dp, end = 14.dp),badge = {
-                Badge(modifier = Modifier.fillMaxSize(),contentColor = MaterialTheme.colorScheme.onPrimary, containerColor = MaterialTheme.colorScheme.primary) {
-                    Text(text = newMessageCount.toString(), fontSize = 14.sp)
-                }
-            }) {}
-
-
+                    )
+                })
         }
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .size(60.dp)
+                .clip(CircleShape),
+            onClick = {
+                if (!cameraGranted.value) {
+                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                } else {
+                    navController?.navigate("camera")
+                }
+            },
+            content = {
+                Icon(
+                    modifier = Modifier.size(60.dp), imageVector = Icons.Filled.Add,
+                    contentDescription = null
+                )
+            },
+            contentColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.onPrimary
 
+        )
     }
+}
