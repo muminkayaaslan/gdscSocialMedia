@@ -451,7 +451,6 @@ fun MainBottomBar(navController: NavHostController?,context: Context) {
             },
             contentColor = MaterialTheme.colorScheme.primary,
             containerColor = MaterialTheme.colorScheme.onPrimary
-
         )
     }
 }
