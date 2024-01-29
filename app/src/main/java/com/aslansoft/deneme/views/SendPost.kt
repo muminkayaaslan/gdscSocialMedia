@@ -76,9 +76,10 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
         .fillMaxSize()
         , color = MaterialTheme.colorScheme.primary) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                if (uri != null){
-                    val painter = rememberAsyncImagePainter(model = uri.toUri())
-                    Image(modifier = Modifier.size(300.dp), contentScale = ContentScale.Crop,painter = painter , contentDescription = null )
+            val isImageUploaded = remember { mutableStateOf(false) }
+            val painter = rememberAsyncImagePainter(model = uri?.toUri())
+            Image(modifier = Modifier.size(300.dp), contentScale = ContentScale.Crop,painter = painter , contentDescription = null )
+            if (uri != null && !isImageUploaded.value){
                     val timestamp = System.currentTimeMillis()
                     val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
                     val formattedDate = dateFormat.format(timestamp)
@@ -89,7 +90,7 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                             .addOnSuccessListener {taskSnapShots ->
                                 storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
                                     photoUrl.value = imageUrl.toString()
-
+                                    isImageUploaded.value = true
                                 }
 
                             }.addOnFailureListener {
