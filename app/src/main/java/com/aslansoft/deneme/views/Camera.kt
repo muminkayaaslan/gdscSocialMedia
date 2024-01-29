@@ -72,7 +72,7 @@ import java.io.FileOutputStream
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             val myVersion = Build.VERSION.SDK_INT
-            if (myVersion >= Build.VERSION_CODES.S) {
+            if (myVersion >= Build.VERSION_CODES.TIRAMISU) {
                 if (permissions[Manifest.permission.READ_MEDIA_IMAGES] == true) {
                     pickPhotoLauncher.launch("image/*")
                 } else {
@@ -215,7 +215,7 @@ import java.io.FileOutputStream
                             .clickable {
                                 val myVersion = Build.VERSION.SDK_INT
 
-                                if (myVersion >= Build.VERSION_CODES.S) {
+                                if (myVersion >= Build.VERSION_CODES.TIRAMISU) {
                                     if (ContextCompat.checkSelfPermission(
                                             context,
                                             Manifest.permission.READ_MEDIA_IMAGES

@@ -95,20 +95,25 @@ dependencies {
     // CameraX core library using the camera2 implementation
     val camerax_version = "1.4.0-alpha03"
     // The following line is optional, as the core library is included indirectly by camera-camera2
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-core:${camerax_version}")
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-camera2:${camerax_version}")
     // If you want to additionally use the CameraX Lifecycle library
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
     // If you want to additionally use the CameraX VideoCapture library
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-video:${camerax_version}")
     // If you want to additionally use the CameraX View class
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-view:${camerax_version}")
-    // If you want to additionally add CameraX ML Kit Vision Integration
-    implementation("androidx.camera:camera-mlkit-vision:${camerax_version}")
+    //noinspection GradleDependency
     // If you want to additionally use the CameraX Extensions library
+    //noinspection GradleDependency
     implementation("androidx.camera:camera-extensions:${camerax_version}")
     //viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    //SplashScreen
+    //MediaStore
 
 }
