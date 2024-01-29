@@ -77,11 +77,15 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
         , color = MaterialTheme.colorScheme.primary) {
         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             val isImageUploaded = remember { mutableStateOf(false) }
+            val lastUploadTime = remember { mutableStateOf(0L) }
             val painter = rememberAsyncImagePainter(model = uri?.toUri())
+
             Image(modifier = Modifier.size(300.dp), contentScale = ContentScale.Crop,painter = painter , contentDescription = null )
             if (uri != null && !isImageUploaded.value){
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastUploadTime.value > 60000){
                     val timestamp = System.currentTimeMillis()
-                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault())
                     val formattedDate = dateFormat.format(timestamp)
                     val fileName = "${username.value}_${formattedDate}"
                     val storageRef = storage.reference.child("posts/${username.value}/$fileName")
@@ -89,14 +93,17 @@ fun SendPostScreen(navController: NavHostController, uri: String?) {
                         storageRef.putFile(uri.toUri())
                             .addOnSuccessListener {taskSnapShots ->
                                 storageRef.downloadUrl.addOnSuccessListener {imageUrl ->
-                                    photoUrl.value = imageUrl.toString()
                                     isImageUploaded.value = true
+                                    photoUrl.value = imageUrl.toString()
+
                                 }
 
                             }.addOnFailureListener {
                                 println(it.message)
                             }
                     }
+                }
+
 
 
 
