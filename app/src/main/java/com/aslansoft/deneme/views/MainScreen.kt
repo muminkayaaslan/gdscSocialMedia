@@ -127,7 +127,7 @@ fun MainScreen(navController: NavHostController) {
     Surface(
         Modifier
             .fillMaxSize()
-            ,color = MaterialTheme.colorScheme.primary) {
+        ,color = MaterialTheme.colorScheme.primary) {
 
         LaunchedEffect( Unit){
             isLoading.value = true
@@ -147,7 +147,7 @@ fun MainScreen(navController: NavHostController) {
                 postList.toList()
                 isLoading.value = false
             }
-         }
+        }
 
 
         val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
@@ -165,8 +165,8 @@ fun MainScreen(navController: NavHostController) {
                 , actions = {
 
                     //Badge(navController = navController, newMessageCount = 5)
-                       
-                    }
+
+                }
 
                 ,colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent,
@@ -174,170 +174,170 @@ fun MainScreen(navController: NavHostController) {
                     actionIconContentColor = Color.Transparent,
 
 
-                ))
+                    ))
 
-                if (isLoading.value){
-                    Box(modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()){
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.onPrimary)
+            if (isLoading.value){
+                Box(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()){
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.onPrimary)
+                }
+
+            }else{
+                LazyColumn(modifier = Modifier.weight(1f)){
+                    item {
+                        Spacer(modifier = Modifier.padding(vertical = 3.dp))
                     }
-
-                }else{
-                    LazyColumn(modifier = Modifier.weight(1f)){
-                        item { 
-                            Spacer(modifier = Modifier.padding(vertical = 3.dp))
+                    items(postList.size){index ->
+                        val postData = postList[index]
+                        val alertDialogState = remember {
+                            mutableStateOf(false)
                         }
-                        items(postList.size){index ->
-                            val postData = postList[index]
-                            val alertDialogState = remember {
-                                mutableStateOf(false)
-                            }
-                            ElevatedCard(
-                                elevation = CardDefaults.cardElevation(
-                                    defaultElevation = 6.dp
-                                ),
-                                modifier = Modifier
+                        ElevatedCard(
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 6.dp
+                            ),
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(3.dp)
                                 .clickable { alertDialogState.value = true }
-                                ,
-                                colors = CardDefaults.elevatedCardColors(
-                                  contentColor = Color.Gray,
-                                ),
-                                shape = RoundedCornerShape(24.dp)
+                            ,
+                            colors = CardDefaults.elevatedCardColors(
+                                contentColor = Color.Gray,
+                            ),
+                            shape = RoundedCornerShape(24.dp)
 
-                            ) {
+                        ) {
 
-                                Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
-                                    Box(modifier = Modifier
-                                        .size(50.dp)
-                                        .padding(5.dp)
-                                        .border(BorderStroke(0.5.dp, Color.Gray), CircleShape)
-                                        , contentAlignment = Alignment.TopStart){
-                                        if (postData.profilePhoto.isNotEmpty()){
-                                            val painter = rememberAsyncImagePainter(
-                                                ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
-                                                    crossfade(true)
-                                                    transformations(CircleCropTransformation())
-                                                }).build()
-                                            )
-                                            Image(modifier = Modifier
+                            Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start){
+                                Box(modifier = Modifier
+                                    .size(50.dp)
+                                    .padding(5.dp)
+                                    .border(BorderStroke(0.5.dp, Color.Gray), CircleShape)
+                                    , contentAlignment = Alignment.TopStart){
+                                    if (postData.profilePhoto.isNotEmpty()){
+                                        val painter = rememberAsyncImagePainter(
+                                            ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
+                                                crossfade(true)
+                                                transformations(CircleCropTransformation())
+                                            }).build()
+                                        )
+                                        Image(modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(CircleShape)
+                                            ,painter = painter, contentDescription = null)
+
+                                    }else{
+                                        if (isSystemInDarkTheme()){
+                                            Icon(modifier = Modifier
                                                 .fillMaxSize()
-                                                .clip(CircleShape)
-                                             ,painter = painter, contentDescription = null)
-
+                                                ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                                         }else{
-                                            if (isSystemInDarkTheme()){
-                                                Icon(modifier = Modifier
-                                                    .fillMaxSize()
-                                                    ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                                            }else{
-                                                Icon(modifier = Modifier
-                                                    .fillMaxSize()
-                                                   ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                            Icon(modifier = Modifier
+                                                .fillMaxSize()
+                                                ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                        }
+
+                                    }
+                                }
+                                Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
+                                if (isSystemInDarkTheme()){
+                                    Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.Gray, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                }else{
+                                    Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+
+                                }
+                            }
+
+
+                            if (isSystemInDarkTheme()){
+                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
+                            }else{
+                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = MaterialTheme.colorScheme.onPrimary, fontSize = 17.sp, fontFamily = googleSans)
+
+                            }
+                            if (postData.postPhoto.isNotEmpty()){
+                                val painter =
+                                    rememberAsyncImagePainter(model = postData.postPhoto)
+                                Image(modifier = Modifier
+                                    .size(300.dp)
+                                    .padding(5.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .clip(RoundedCornerShape(18.dp)),
+                                    painter = painter,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            if (myUserName.value != postData.username){
+
+                                if (alertDialogState.value){
+                                    AlertDialog(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        onDismissRequest = {
+                                            alertDialogState.value = false
+                                        },
+                                        confirmButton = {
+                                            TextButton(onClick = {
+                                                if (myUserName.value != postData.username){
+                                                    navController.navigate(
+
+                                                        "userprofile/${postData.username}"
+                                                    )
+                                                }else{
+                                                    navController.navigate("profile_screen")
+                                                }
+
+                                            },
+                                                colors = ButtonDefaults.textButtonColors(
+                                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                                )) {
+                                                Text(text = "Profile Git")
+                                            }
+                                        },
+                                        icon = {
+
+                                            if (isSystemInDarkTheme()) {
+                                                Icon(modifier = Modifier.size(50.dp),
+                                                    imageVector = Icons.Filled.Person,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.secondary
+                                                )
+                                            } else {
+                                                Icon(modifier = Modifier.size(50.dp),
+                                                    imageVector = Icons.Filled.Person,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onPrimary
+                                                )
                                             }
 
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
-                                    if (isSystemInDarkTheme()){
-                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.Gray, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
-                                    }else{
-                                        Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
+                                        },
+                                        title = {
+                                            if (isSystemInDarkTheme()) {
+                                                Text(
+                                                    text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
+                                                    color = MaterialTheme.colorScheme.secondary
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
 
-                                    }
-                                    }
+                                            }
 
+                                        },
 
-                                if (isSystemInDarkTheme()){
-                                    Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
-                                }else{
-                                    Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = MaterialTheme.colorScheme.onPrimary, fontSize = 17.sp, fontFamily = googleSans)
-
-                                }
-                                if (postData.postPhoto.isNotEmpty()){
-                                    val painter =
-                                        rememberAsyncImagePainter(model = postData.postPhoto)
-                                    Image(modifier = Modifier
-                                        .size(300.dp)
-                                        .padding(5.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                        .clip(RoundedCornerShape(18.dp)),
-                                        painter = painter,
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                                if (myUserName.value != postData.username){
-
-                                    if (alertDialogState.value){
-                                        AlertDialog(
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            onDismissRequest = {
-                                                alertDialogState.value = false
-                                            },
-                                            confirmButton = {
-                                                TextButton(onClick = {
-                                                    if (myUserName.value != postData.username){
-                                                        navController.navigate(
-
-                                                            "userprofile/${postData.username}"
-                                                        )
-                                                    }else{
-                                                        navController.navigate("profile_screen")
-                                                    }
-
-                                                },
-                                                    colors = ButtonDefaults.textButtonColors(
-                                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                                    )) {
-                                                    Text(text = "Profile Git")
-                                                }
-                                            },
-                                            icon = {
-
-                                                if (isSystemInDarkTheme()) {
-                                                    Icon(modifier = Modifier.size(50.dp),
-                                                        imageVector = Icons.Filled.Person,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.secondary
-                                                    )
-                                                } else {
-                                                    Icon(modifier = Modifier.size(50.dp),
-                                                        imageVector = Icons.Filled.Person,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.onPrimary
-                                                    )
-                                                }
-
-                                            },
-                                            title = {
-                                                if (isSystemInDarkTheme()) {
-                                                    Text(
-                                                        text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
-                                                        color = MaterialTheme.colorScheme.secondary
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = "Bu Kullanıcı İle Ne Yapmak İstiyorsun?",
-                                                        color = MaterialTheme.colorScheme.onPrimary
-                                                    )
-
-                                                }
-
-                                            },
-
-                                            )
-                                    }
-
+                                        )
                                 }
 
                             }
 
                         }
+
                     }
                 }
+            }
             Column (verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
                 MainBottomBar(navController = navController, context = context)
             }
@@ -355,7 +355,7 @@ fun MainScreen(navController: NavHostController) {
     BackHandler(true) {
         activity?.finish()
     }
- }
+}
 
 @Composable
 fun MainBottomBar(navController: NavHostController?,context: Context) {
