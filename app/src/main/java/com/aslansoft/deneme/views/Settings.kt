@@ -2,6 +2,8 @@ package com.aslansoft.deneme.views
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -96,6 +98,9 @@ fun Settings(navController: NavHostController) {
                 mutableStateOf(false)
             }
             val contextInsta = LocalContext.current
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                // Handle result if needed
+            }
             LazyColumn{
                 item {
                     Row (modifier = Modifier
@@ -166,7 +171,21 @@ fun Settings(navController: NavHostController) {
                 item {
                     Row (modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)){
+                        .height(50.dp).clickable {
+
+                            val shareIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, "GDSC YOBU Topluluğunun Neler Yaptığını Sende Merak Ediyorsan Aramıza Katıl: https://play.google.com/store/apps/details?id=com.aslansoft.deneme")
+                                type = "text/plain"
+                            }
+
+                            try {
+                                launcher.launch(Intent.createChooser(shareIntent, "Paylaş"))
+                            } catch (e: Exception) {
+                                // Handle exception if sharing is not possible
+                                // You can provide fallback behavior or show an error message to the user
+                            }
+                        }){
                     Icon(modifier = Modifier
                         .align(Alignment.CenterVertically)
                        ,imageVector = Icons.Outlined.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary )
