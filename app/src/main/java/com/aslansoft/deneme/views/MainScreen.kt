@@ -61,9 +61,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -161,7 +163,7 @@ fun MainScreen(navController: NavHostController) {
                 ),
                 title = { Text(modifier = Modifier.
                 padding(top = 12.dp),
-                    text = "GDSC", fontFamily = googleSans)}
+                    text = "Ana Sayfa", fontFamily = googleSans)}
                 , actions = {
 
                     //Badge(navController = navController, newMessageCount = 5)
@@ -228,16 +230,9 @@ fun MainScreen(navController: NavHostController) {
                                             ,painter = painter, contentDescription = null)
 
                                     }else{
-                                        if (isSystemInDarkTheme()){
-                                            Icon(modifier = Modifier
-                                                .fillMaxSize()
-                                                ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                                        }else{
-                                            Icon(modifier = Modifier
-                                                .fillMaxSize()
-                                                ,imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                                        }
-
+                                        Icon(modifier = Modifier
+                                            .fillMaxSize(),
+                                        imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                                     }
                                 }
                                 Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
@@ -338,9 +333,6 @@ fun MainScreen(navController: NavHostController) {
                     }
                 }
             }
-            Column (verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally){
-                MainBottomBar(navController = navController, context = context)
-            }
         }
 
 
@@ -357,9 +349,10 @@ fun MainScreen(navController: NavHostController) {
     }
 }
 
+
 @Composable
 fun MainBottomBar(navController: NavHostController?,context: Context) {
-    val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
+    val gradient = Brush.linearGradient(listOf(Color.Green, Color.Yellow))
     val cameraGranted = remember {
         mutableStateOf(false)
     }
@@ -384,73 +377,55 @@ fun MainBottomBar(navController: NavHostController?,context: Context) {
         }
 
     }
-    Box(modifier = Modifier.height(80.dp).background(Color.Transparent), contentAlignment = Alignment.TopCenter) {
-        NavigationBar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(gradient, RoundedCornerShape(10.dp))
-                .clip(RoundedCornerShape(10.dp)),
-            containerColor = Color.Transparent,
-            contentColor = Color.Transparent
-        ) {
 
-            //ana ekran butonu
-            NavigationBarItem(
-                selected = true,
-                onClick = { navController?.navigate("main_screen") },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = null
-                    )
-                },
-                colors = NavigationBarItemDefaults
-                    .colors(
-                        selectedIconColor = MaterialTheme.colorScheme.secondary,
-                        unselectedTextColor = Color.Gray,
-                        indicatorColor = MaterialTheme.colorScheme.onPrimary
-                    )
-            )
-
-            //Profil ekranına yönlendiren buton
-            NavigationBarItem(selected = false,
-                onClick = {
-                    navController?.navigate("profile_screen")
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = null
-                    )
-                }, colors = NavigationBarItemDefaults.run {
-                    colors(
-                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                        disabledIconColor = MaterialTheme.colorScheme.onSecondary
-                    )
-                })
-        }
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .size(60.dp)
-                .clip(CircleShape),
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(gradient),
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent
+    ) {
+        var selectedIndex by remember { mutableStateOf(0) }
+        //ana ekran butonu
+        NavigationBarItem(
             onClick = {
-                if (!cameraGranted.value) {
-                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
-                } else {
-                    navController?.navigate("camera")
-                }
+                navController?.navigate("main_screen")
+                selectedIndex = 0
             },
-            content = {
+            selected = selectedIndex == 0,
+            icon = {
                 Icon(
-                    modifier = Modifier.size(60.dp), imageVector = Icons.Filled.Add,
+                    imageVector = Icons.Filled.Home,
                     contentDescription = null
                 )
             },
-            contentColor = MaterialTheme.colorScheme.primary,
-            containerColor = MaterialTheme.colorScheme.onPrimary
+            colors = NavigationBarItemDefaults
+                .colors(
+                    selectedIconColor = MaterialTheme.colorScheme.secondary,
+                    unselectedIconColor = Color.DarkGray,
+                    indicatorColor = MaterialTheme.colorScheme.onBackground
+                )
         )
+
+        //Profil ekranına yönlendiren buton
+        NavigationBarItem(
+            onClick = {
+                navController?.navigate("profile_screen")
+                selectedIndex = 1
+            },
+            selected = selectedIndex == 1,
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null
+                )
+            }, colors = NavigationBarItemDefaults.run {
+                colors(
+                    unselectedIconColor = Color.DarkGray,
+                    disabledIconColor = MaterialTheme.colorScheme.onSecondary,
+                    indicatorColor = MaterialTheme.colorScheme.onBackground
+                )
+            })
     }
 }
