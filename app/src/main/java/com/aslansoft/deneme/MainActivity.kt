@@ -1,9 +1,14 @@
 package com.aslansoft.deneme
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -51,6 +56,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -185,12 +191,42 @@ class MainActivity : ComponentActivity() {
                 if (currentDestinationText.value == "main_screen" || currentDestinationText.value == "profile_screen") {
                     Column (modifier = Modifier.fillMaxSize().background(Color.Transparent), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(modifier = Modifier.size(100.dp).offset(y=-(17.5).dp).background(Color.Transparent), contentAlignment = Alignment.BottomCenter) {
+                        val cameraGranted = remember {
+                            mutableStateOf(false)
+                        }
+
+                        cameraGranted.value = ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                        val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
+                            ActivityResultContracts.RequestPermission()
+                        ) { isGranted ->
+                            if (isGranted) {
+                                cameraGranted.value = true
+
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                        }
                         FloatingActionButton(
                             modifier = Modifier
                                 .size(70.dp)
                                 .clip(CircleShape)
                                 .border(BorderStroke(1.5.dp, Color.Gray), CircleShape),
-                            onClick = { navController.navigate("camera") },
+                            onClick = {
+                                if (!cameraGranted.value){
+                                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                                }else{
+                                    navController.navigate("camera")
+                                }
+                            },
                             content = {
                                 Icon(
                                     modifier = Modifier.size(30.dp),

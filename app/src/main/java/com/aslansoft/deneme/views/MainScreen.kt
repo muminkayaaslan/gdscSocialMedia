@@ -352,32 +352,8 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun MainBottomBar(navController: NavHostController?,context: Context) {
+
     val gradient = Brush.linearGradient(listOf(Color.Green, Color.Yellow))
-    val cameraGranted = remember {
-        mutableStateOf(false)
-    }
-
-    cameraGranted.value = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED
-
-    val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            cameraGranted.value = true
-
-        } else {
-            Toast.makeText(
-                context,
-                "Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-    }
-
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()

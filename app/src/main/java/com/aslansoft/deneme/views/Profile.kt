@@ -185,7 +185,7 @@ fun ProfileScreen(navController: NavHostController) {
                         contentDescription = null,
                         modifier = Modifier.clickable {
                             bottomSheetIsOpen = true
-                        }
+                        }, tint = Color.Black
                     )
                     //Badge(navController = navController, newMessageCount = 5)
 
