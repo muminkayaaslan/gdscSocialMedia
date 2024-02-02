@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -263,7 +264,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                     newUsername.value = it
                 },
                     trailingIcon = {
-                                   Icon(imageVector = Icons.Filled.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                   Icon(imageVector = Icons.Filled.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                     },
                     label = { Text(text = "Kullanıcı Adı", fontFamily = googleSans)},
                     placeholder = { Text(text = username.value)},
@@ -306,12 +307,12 @@ fun ProfileEditScreen(navController: NavHostController) {
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.onPrimary))
+                               MaterialTheme.colorScheme.secondary))
                         }else{
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.onPrimary) )
+                               MaterialTheme.colorScheme.secondary) )
                         }
 
                     }
@@ -340,12 +341,12 @@ fun ProfileEditScreen(navController: NavHostController) {
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.onPrimary))
+                               MaterialTheme.colorScheme.secondary))
                         }else{
                             Image(modifier = Modifier
                                 .size(20.dp)
                                 .clickable { passwordVisibility.value = true },bitmap = ImageBitmap.imageResource(R.drawable.visibility), contentDescription = null , colorFilter = ColorFilter.tint(
-                                MaterialTheme.colorScheme.onPrimary) )
+                               MaterialTheme.colorScheme.secondary) )
                         }
 
                     }

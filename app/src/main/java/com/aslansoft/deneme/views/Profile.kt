@@ -3,6 +3,8 @@
 package com.aslansoft.deneme.views
 
 import android.annotation.SuppressLint
+import android.webkit.WebSettings.TextSize
+import android.widget.EditText
 import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -64,8 +67,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -156,7 +162,7 @@ fun ProfileScreen(navController: NavHostController) {
                 }).build()
         )
 
-        val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
+        val gradient = Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary))
 
 
         Column(
@@ -180,6 +186,7 @@ fun ProfileScreen(navController: NavHostController) {
                         text = "Profil", fontFamily = googleSans
                     )
                 }, actions = {
+                    Box(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterEnd){
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = null,
@@ -187,6 +194,7 @@ fun ProfileScreen(navController: NavHostController) {
                             bottomSheetIsOpen = true
                         }, tint = Color.Black
                     )
+                    }
                     //Badge(navController = navController, newMessageCount = 5)
 
                 }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -220,16 +228,18 @@ fun ProfileScreen(navController: NavHostController) {
                     )
                 }
             }
-Row (modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
-    Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = Color.White)
-            Text(
-                text = username.value,
-                fontSize = 45.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontFamily = googleSans
-            )
-    Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = Color.White)
-}
+
+
+            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = MaterialTheme.colorScheme.background)
+                Text(
+                    text = username.value,
+                    fontSize = 45.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = googleSans
+                )
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp,color = MaterialTheme.colorScheme.background)
+            }
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(10.dp))
             if (myPostList.isEmpty() && !isLoading.value) {

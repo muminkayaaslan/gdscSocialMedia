@@ -36,6 +36,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -152,7 +154,8 @@ fun MainScreen(navController: NavHostController) {
         }
 
 
-        val gradient = Brush.linearGradient(listOf(Color.Cyan, Color.Green))
+        val gradient = Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary
+        ))
         Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
@@ -353,7 +356,7 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun MainBottomBar(navController: NavHostController?,context: Context) {
 
-    val gradient = Brush.linearGradient(listOf(Color.Green, Color.Yellow))
+    val gradient= Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary))
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -362,25 +365,27 @@ fun MainBottomBar(navController: NavHostController?,context: Context) {
         containerColor = Color.Transparent,
         contentColor = Color.Transparent
     ) {
+
         var selectedIndex by remember { mutableStateOf(0) }
+        val homeicon = if(selectedIndex==0) Icons.Filled.Home else Icons.Outlined.Home
+        val profileicon = if(selectedIndex==1) Icons.Filled.Person else Icons.Outlined.Person
         //ana ekran butonu
         NavigationBarItem(
             onClick = {
                 navController?.navigate("main_screen")
                 selectedIndex = 0
             },
-            selected = selectedIndex == 0,
+            selected = false,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Home,
+                    imageVector = homeicon,
                     contentDescription = null
                 )
             },
             colors = NavigationBarItemDefaults
                 .colors(
                     selectedIconColor = MaterialTheme.colorScheme.secondary,
-                    unselectedIconColor = Color.DarkGray,
-                    indicatorColor = MaterialTheme.colorScheme.onBackground
+                    unselectedIconColor = Color.DarkGray
                 )
         )
 
@@ -390,18 +395,17 @@ fun MainBottomBar(navController: NavHostController?,context: Context) {
                 navController?.navigate("profile_screen")
                 selectedIndex = 1
             },
-            selected = selectedIndex == 1,
+            selected = false,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Person,
+                    imageVector = profileicon,
                     contentDescription = null
                 )
             }, colors = NavigationBarItemDefaults.run {
                 colors(
-                    unselectedIconColor = Color.DarkGray,
-                    disabledIconColor = MaterialTheme.colorScheme.onSecondary,
-                    indicatorColor = MaterialTheme.colorScheme.onBackground
-                )
+                selectedIconColor = MaterialTheme.colorScheme.secondary,
+                unselectedIconColor = Color.DarkGray
+            )
             })
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,9 +33,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,7 +58,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -99,6 +108,9 @@ class MainActivity : ComponentActivity() {
                     systemUiController.setSystemBarsColor(
                         color = MaterialTheme.colorScheme.primary
                     )
+                    systemUiController.setNavigationBarColor(
+                        color = Color.Yellow
+                    )
                 }
                 //Start Destination
 
@@ -106,7 +118,7 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val navController  = rememberNavController()
 
-
+                val gradient = Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary))
                 val currentDestinationText = remember { mutableStateOf("") }
 
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -219,7 +231,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier
                                 .size(70.dp)
                                 .clip(CircleShape)
-                                .border(BorderStroke(1.5.dp, Color.Gray), CircleShape),
+                                .border(BorderStroke(1.dp, Color.LightGray), CircleShape),
                             onClick = {
                                 if (!cameraGranted.value){
                                     requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
@@ -228,11 +240,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             content = {
-                                Icon(
-                                    modifier = Modifier.size(30.dp),
-                                    imageVector = Icons.Filled.Add,
+                                Image(
+                                    modifier = Modifier.size(35.dp),
+                                    imageVector = ImageVector.vectorResource(R.drawable.photocameraa),
                                     contentDescription = null,
-                                    tint = Color.LightGray
+                                    colorFilter = ColorFilter.tint(Color(227,226,201,255))
                                 )
                             },
                             containerColor = Color.DarkGray,
