@@ -108,9 +108,6 @@ class MainActivity : ComponentActivity() {
                     systemUiController.setSystemBarsColor(
                         color = MaterialTheme.colorScheme.primary
                     )
-                    systemUiController.setNavigationBarColor(
-                        color = Color.Yellow
-                    )
                 }
                 //Start Destination
 

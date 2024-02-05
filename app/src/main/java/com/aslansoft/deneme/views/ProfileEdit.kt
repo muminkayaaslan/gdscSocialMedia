@@ -129,11 +129,13 @@ fun ProfileEditScreen(navController: NavHostController) {
                                             db.collection("posts").whereEqualTo("username",username.value).get().addOnSuccessListener { documents ->
                                                 for (document in documents){
                                                     db.collection("posts").document(document.id).update("profile photo",downloadUrl.value).addOnSuccessListener {
-                                                        Toast.makeText(context, "Profil Fotoğrafı Başarıyla Güncellendi", Toast.LENGTH_LONG).show()
+                                                        println("success")
                                                     }
                                                 }
 
                                             }
+
+                                            Toast.makeText(context, "Profil Fotoğrafı Başarıyla Güncellendi", Toast.LENGTH_LONG).show()
                                         }
                                         .addOnFailureListener { e ->
                                             println("Firestore Güncelleme Hatası: $e")
@@ -284,7 +286,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                     ))
                 OutlinedTextField(value = password.value, onValueChange ={
                     password.value = it
-                },label = { Text(text = "Yeni Parola", fontFamily = googleSans)},
+                },label = { Text(text = "Parola", fontFamily = googleSans)},
                     colors = OutlinedTextFieldDefaults.
                     colors(
                         unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
@@ -319,7 +321,7 @@ fun ProfileEditScreen(navController: NavHostController) {
                 )
                 OutlinedTextField(value = newPassword.value, onValueChange ={
                     newPassword.value = it
-                },label = { Text(text = "Yeni Parola Tekrar", fontFamily = googleSans)},
+                },label = { Text(text = "Yeni Parola", fontFamily = googleSans)},
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
                         focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
@@ -377,11 +379,11 @@ fun ProfileEditScreen(navController: NavHostController) {
                                                   .addOnSuccessListener {documents ->
                                                       for (document in documents){
                                                           db.collection("posts").document(document.id).update("username",newUsername.value).addOnSuccessListener {
-                                                              Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
-                                                              navController.navigate("main_screen")
+
                                                           }
                                                       }
-
+                                                      Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
+                                                      navController.navigate("main_screen")
                                                   }
                                       }
                                           .addOnFailureListener {exception ->
@@ -391,36 +393,54 @@ fun ProfileEditScreen(navController: NavHostController) {
                                       }
                                   }
                               } else if(newPassword.value.isNotEmpty()){
-                                  if (password.value == newPassword.value){
 
                                       val credential = currentUser?.email?.let { EmailAuthProvider.getCredential(it, password.value) }
-                                      if (currentUser != null && credential != null){
-                                          auth.currentUser?.updatePassword(newPassword.value)?.addOnSuccessListener {
-                                              Toast.makeText(context,"Parola Başarı ile Güncellendi",Toast.LENGTH_SHORT).show()
-                                          }?.addOnFailureListener {
-                                              Toast.makeText(context,"Parola Değiştirilemedi", Toast.LENGTH_SHORT).show()
-                                              println(it.message + "password change error")
+                                      println(credential.toString())
+                                      if (credential != null) {
+                                          if (password.value.isNotEmpty()){
+                                              auth.currentUser!!.reauthenticate(credential)
+                                                  .addOnCompleteListener { task ->
+                                                      auth.currentUser?.updatePassword(newPassword.value)
+                                                          ?.addOnSuccessListener {
+                                                              Toast.makeText(
+                                                                  context,
+                                                                  "Parola Başarı ile Güncellendi",
+                                                                  Toast.LENGTH_SHORT
+                                                              ).show()
+                                                          }?.addOnFailureListener {
+                                                              Toast.makeText(
+                                                                  context,
+                                                                  "Parola değiştirilemedi",
+                                                                  Toast.LENGTH_SHORT
+                                                              ).show()
+                                                              println(it.message + "password change error")
+                                                              it.printStackTrace()
+                                                          }
+                                                  }
+                                          }else{
+                                              println("password.value = null")
                                           }
-                                      }
 
-                                  }else{
-                                      Toast.makeText(context,"Parolalar Eşleşmiyor",Toast.LENGTH_SHORT).show()
-                                  }
+
 
                               }
                               else if (newUsername.value.isNotEmpty() && newPassword.value.isNotEmpty()){
 
-                                  if (password.value == newPassword.value){
+
 
                                       val credential = currentUser?.email?.let { EmailAuthProvider.getCredential(it, password.value) }
-                                      if (currentUser != null && credential != null){
-                                          auth.currentUser?.updatePassword(newPassword.value)?.addOnSuccessListener {
-                                              Toast.makeText(context,"Parola Başarı ile Güncellendi",Toast.LENGTH_SHORT).show()
-                                          }?.addOnFailureListener {
-                                              Toast.makeText(context,"Parola Değiştirilemedi", Toast.LENGTH_SHORT).show()
-                                              println(it.message + "password change error")
+                                          if (credential != null) {
+                                              auth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
+                                                  auth.currentUser?.updatePassword(newPassword.value)?.addOnSuccessListener {
+                                                      Toast.makeText(context,"Parola Başarı ile Güncellendi",Toast.LENGTH_SHORT).show()
+                                                      navController.navigate("profile_screen")
+                                                  }?.addOnFailureListener {
+                                                      Toast.makeText(context,"Parola Değiştirilemedi", Toast.LENGTH_SHORT).show()
+                                                      println(it.message + "password change error")
+                                                  }
+                                              }
                                           }
-                                      }
+
                                       val usernameUpdate = hashMapOf("username" to newUsername.value)
                                       if (currentUser != null) {
                                           currentUser.email?.let { db.collection("users")
@@ -430,13 +450,14 @@ fun ProfileEditScreen(navController: NavHostController) {
                                                   db.collection("posts").get().addOnSuccessListener { documents ->
                                                       for (document in documents){
                                                           db.collection("posts").document(document.id).update("username",newUsername.value).addOnSuccessListener {
-                                                              Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
-                                                              navController.navigate("main_screen")
+                                                              println("success")
                                                           }
+                                                          navController.navigate("main_screen")
                                                       }
 
-                                                  }
 
+                                                  }
+                                                  Toast.makeText(context,"Kullanıcı Adı Başarıyla Değiştirildi",Toast.LENGTH_SHORT).show()
                                               }
                                               .addOnFailureListener { exception ->
                                                   println(exception.message)
@@ -444,11 +465,10 @@ fun ProfileEditScreen(navController: NavHostController) {
                                               }
                                           }
                                       }
-                                  }else{
-                                      Toast.makeText(context,"Parolalar Eşleşmiyor",Toast.LENGTH_SHORT).show()
-                                  }
+
 
                               }
+                          }
                           }
                 },
                 colors = ButtonDefaults.buttonColors(
