@@ -10,9 +10,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -109,148 +118,152 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                //Start Destination
 
                 //Navigation Fragment
                 val context = LocalContext.current
                 val navController  = rememberNavController()
-
-                val gradient = Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary))
                 val currentDestinationText = remember { mutableStateOf("") }
 
                 Box(modifier = Modifier.fillMaxSize()) {
 
 
-                Scaffold(
-                    modifier = Modifier.background(Color.Transparent),
-                    bottomBar = {
+                    Scaffold(
+                        modifier = Modifier.background(Color.Transparent),
+                        bottomBar = {
 
-                       if (currentDestinationText.value == "main_screen" || currentDestinationText.value == "profile_screen") {
-                           Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                            MainBottomBar(navController = navController, context = context)
-                           }
-                       }
-                    },
-
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        NavHost(navController = navController,
-                            startDestination = "splash_screen",
-                            enterTransition = { fadeIn(animationSpec = tween(0)) /*+ slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start,tween(3000))*/},
-                            exitTransition = { fadeOut(animationSpec = tween(0)) }){
-
-                            composable("main_screen"){
-                                MainScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("login_screen"){
-                                LoginScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("register_screen"){
-                                RegisterScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("post_screen/{uri}"){navBackStackEntry ->
-                                SendPostScreen(navController = navController,uri = navBackStackEntry.arguments?.getString("uri"))
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("main_bottom_bar"){
-                                MainBottomBar(navController = navController, context = LocalContext.current)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("profile_screen"){
-                                ProfileScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-
-                            composable("setting_screen"){
-                                Settings(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("profileEdit_screen"){
-                                ProfileEditScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("camera"){
-                                Camera(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("userprofile/{username}"){backStackEntry ->
-                                UserProfile(navController = navController,username = backStackEntry.arguments?.getString("username"))
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-                            }
-                            composable("splash_screen"){
-                                SplashScreen(navController = navController)
-                                currentDestinationText.value = navController.currentDestination?.route.toString()
-
-                            }
-
-
-                        }
-
-
-                    }
-                }
-                if (currentDestinationText.value == "main_screen" || currentDestinationText.value == "profile_screen") {
-                    Column (modifier = Modifier.fillMaxSize().background(Color.Transparent), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(modifier = Modifier.size(100.dp).offset(y=-(17.5).dp).background(Color.Transparent), contentAlignment = Alignment.BottomCenter) {
-                        val cameraGranted = remember {
-                            mutableStateOf(false)
-                        }
-
-                        cameraGranted.value = ContextCompat.checkSelfPermission(
-                            context,
-                            android.Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-
-                        val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
-                            ActivityResultContracts.RequestPermission()
-                        ) { isGranted ->
-                            if (isGranted) {
-                                cameraGranted.value = true
-
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-
-                        }
-                        FloatingActionButton(
-                            modifier = Modifier
-                                .size(70.dp)
-                                .clip(CircleShape)
-                                .border(BorderStroke(1.dp, Color.LightGray), CircleShape),
-                            onClick = {
-                                if (!cameraGranted.value){
-                                    requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
-                                }else{
-                                    navController.navigate("camera")
+                            AnimatedVisibility(
+                                enter = slideInVertically(initialOffsetY = { it }),
+                                exit = slideOutVertically(targetOffsetY = { it }),
+                                visible = currentDestinationText.value == "main_screen" || currentDestinationText.value == "profile_screen",
+                            )  {
+                                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                                    MainBottomBar(navController = navController, context = context)
                                 }
-                            },
-                            content = {
-                                Image(
-                                    modifier = Modifier.size(35.dp),
-                                    imageVector = ImageVector.vectorResource(R.drawable.photocameraa),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(Color(227,226,201,255))
-                                )
-                            },
-                            containerColor = Color.DarkGray,
-                            contentColor = Color.Cyan,
-                            elevation = FloatingActionButtonDefaults.elevation(0.dp)
-                        )
+                            }
+                        },
+
+                        ) { innerPadding ->
+                        Column(
+                            modifier = Modifier
+                                .padding(innerPadding),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            NavHost(navController = navController,
+                                startDestination = "splash_screen",
+                                enterTransition = {EnterTransition.None},
+                                exitTransition = {ExitTransition.None}){
+
+                                composable("main_screen"){
+                                    MainScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("login_screen"){
+                                    LoginScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("register_screen"){
+                                    RegisterScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("post_screen/{uri}"){navBackStackEntry ->
+                                    SendPostScreen(navController = navController,uri = navBackStackEntry.arguments?.getString("uri"))
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("main_bottom_bar"){
+                                    MainBottomBar(navController = navController, context = LocalContext.current)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("profile_screen"){
+                                    ProfileScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+
+                                composable("setting_screen"){
+                                    Settings(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("profileEdit_screen"){
+                                    ProfileEditScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("camera"){
+                                    Camera(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("userprofile/{username}"){backStackEntry ->
+                                    UserProfile(navController = navController,username = backStackEntry.arguments?.getString("username"))
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+                                }
+                                composable("splash_screen"){
+                                    SplashScreen(navController = navController)
+                                    currentDestinationText.value = navController.currentDestination?.route.toString()
+
+                                }
+
+
+                            }
+
+
+                        }
                     }
-                }
-                }
+                    AnimatedVisibility(
+                        visible = currentDestinationText.value == "main_screen" || currentDestinationText.value == "profile_screen",
+                        enter = slideInVertically(initialOffsetY = { it }), // Slide in from bottom
+                        exit = slideOutVertically(targetOffsetY = { it }),  // Slide out to bottom
+                    ){
+                        Column (modifier = Modifier.fillMaxSize().background(Color.Transparent), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(modifier = Modifier.size(100.dp).offset(y=-(17.5).dp).background(Color.Transparent), contentAlignment = Alignment.BottomCenter) {
+                                val cameraGranted = remember {
+                                    mutableStateOf(false)
+                                }
+
+                                cameraGranted.value = ContextCompat.checkSelfPermission(
+                                    context,
+                                    android.Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+
+                                val requestPermissionCameraLauncher = rememberLauncherForActivityResult(
+                                    ActivityResultContracts.RequestPermission()
+                                ) { isGranted ->
+                                    if (isGranted) {
+                                        cameraGranted.value = true
+
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Gönderi Paylaşmanız İçin Kameraya İzin Vermelisiniz ",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+
+                                }
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .size(70.dp)
+                                        .clip(CircleShape)
+                                        .border(BorderStroke(1.dp, Color.LightGray), CircleShape),
+                                    onClick = {
+                                        if (!cameraGranted.value){
+                                            requestPermissionCameraLauncher.launch(Manifest.permission.CAMERA)
+                                        }else{
+                                            navController.navigate("camera")
+                                        }
+                                    },
+                                    content = {
+                                        Image(
+                                            modifier = Modifier.size(35.dp),
+                                            imageVector = ImageVector.vectorResource(R.drawable.photocameraa),
+                                            contentDescription = null,
+                                            colorFilter = ColorFilter.tint(Color(227,226,201,255))
+                                        )
+                                    },
+                                    containerColor = Color.DarkGray,
+                                    contentColor = Color.Cyan,
+                                    elevation = FloatingActionButtonDefaults.elevation(0.dp)
+                                )
+                            }
+                        }
+                    }
 
 
                 }

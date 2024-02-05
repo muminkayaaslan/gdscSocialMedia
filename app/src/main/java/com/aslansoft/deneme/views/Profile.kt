@@ -97,7 +97,7 @@ data class MyPost(
     val post: String,
     val postPhoto: String,
     val date: Timestamp
-        )
+)
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,14 +186,14 @@ fun ProfileScreen(navController: NavHostController) {
                         text = "Profil", fontFamily = googleSans
                     )
                 }, actions = {
-                    Box(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterEnd){
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            bottomSheetIsOpen = true
-                        }, tint = Color.Black
-                    )
+                    Box(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterEnd) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                bottomSheetIsOpen = true
+                            }, tint = Color.Black
+                        )
                     }
                     //Badge(navController = navController, newMessageCount = 5)
 
@@ -207,25 +207,25 @@ fun ProfileScreen(navController: NavHostController) {
             )
 
             Spacer(modifier = Modifier.padding(30.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                if (profilePhoto.value.isNotEmpty()) {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        painter = painter,
-                        contentDescription = null
-                    )
-                } else {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        imageVector = Icons.Filled.AccountCircle,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
-                    )
+            Row(modifier = Modifier.height(150.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                ) {
+                    if (profilePhoto.value.isNotEmpty()) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painter,
+                            contentDescription = null
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                        )
+                    }
                 }
             }
 
