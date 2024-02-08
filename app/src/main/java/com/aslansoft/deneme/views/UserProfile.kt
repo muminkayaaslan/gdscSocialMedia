@@ -3,7 +3,10 @@ package com.aslansoft.deneme.views
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +16,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -34,6 +40,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -78,7 +86,6 @@ fun UserProfile(navController: NavHostController, username: String?) {
             mutableStateOf("")
         }
 
-
         LaunchedEffect(username) {
             isLoading.value = true
             db.collection("posts")
@@ -115,55 +122,69 @@ fun UserProfile(navController: NavHostController, username: String?) {
                 }
         }
 
+        val gradient = Brush.linearGradient(listOf(MaterialTheme.colorScheme.onSecondary, MaterialTheme.colorScheme.onPrimary))
+        val painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value).apply(block = fun ImageRequest.Builder.() {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+            }).build()
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)), horizontalAlignment = Alignment.CenterHorizontally) {
             CenterAlignedTopAppBar(modifier = Modifier
                 .height(50.dp)
-                .clip(RoundedCornerShape(10.dp)),
-                title = { Text(modifier = Modifier.
-                padding(top = 12.dp),
-                    text = "Profil", fontFamily = googleSans
-                )
-                }
-                ,colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    contentColorFor(backgroundColor = MaterialTheme.colorScheme.primary),
-                    titleContentColor = MaterialTheme.colorScheme.secondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.secondary
+                .background(gradient, RoundedCornerShape(bottomStart = 5.dp, bottomEnd = 5.dp))
+                .clip(
+                    RoundedCornerShape(
+                        10.dp
+                    )
+                ),
+                title = {
+                    Text(
+                        modifier = Modifier.padding(top = 12.dp),
+                        text = "Profil", fontFamily = googleSans
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.DarkGray,
+                    actionIconContentColor = Color.Transparent,))
 
-                ))
             Spacer(modifier = Modifier.padding(30.dp))
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .align(Alignment.CenterHorizontally)){
-                if (profilePhoto.value.isNotEmpty()) {
-                    val painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current).data(data = profilePhoto.value).apply(block = fun ImageRequest.Builder.() {
-                            crossfade(true)
-                            transformations(CircleCropTransformation())
-                        }).build()
-                    )
-
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        painter = painter,
-                        contentDescription = null
-                    )
-                } else {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        imageVector = Icons.Filled.AccountCircle,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
-                    )
+            Row(modifier = Modifier.height(150.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .border(BorderStroke(2.dp,gradient), CircleShape)
+                ) {
+                    if (profilePhoto.value.isNotEmpty()) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painter,
+                            contentDescription = null
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                        )
+                    }
                 }
             }
 
-            username?.let { Text(text = it, fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans) }
             //kendi paylaştığın gönderiler
+            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = MaterialTheme.colorScheme.background)
+                username?.let { Text(text = it, fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans) }
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp,color = MaterialTheme.colorScheme.background)
+            }
             Spacer(modifier = Modifier.padding(30.dp))
             if (userPostList.isEmpty() && !isLoading.value){
                 if (isLoading.value) {
