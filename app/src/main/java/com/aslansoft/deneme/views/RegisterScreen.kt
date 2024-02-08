@@ -18,8 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -81,6 +85,12 @@ fun RegisterScreen(navController: NavHostController) {
         }
         val accessPasswordVisibility = remember {
             mutableStateOf(false)
+        }
+        val menuIsState = remember {
+            mutableStateOf(false)
+        }
+        val userType = remember {
+            mutableStateOf("")
         }
 
 
@@ -146,7 +156,7 @@ fun RegisterScreen(navController: NavHostController) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 , visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
-                    if (passwordVisibility.value == true){
+                    if (passwordVisibility.value){
                         Image(modifier = Modifier
                             .size(20.dp)
                             .clickable { passwordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
@@ -176,7 +186,7 @@ fun RegisterScreen(navController: NavHostController) {
                 ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
-                    if (accessPasswordVisibility.value == true){
+                    if (accessPasswordVisibility.value){
                         Image(modifier = Modifier
                             .size(20.dp)
                             .clickable { accessPasswordVisibility.value = false },bitmap = ImageBitmap.imageResource(R.drawable.visibility_off), contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
@@ -189,6 +199,42 @@ fun RegisterScreen(navController: NavHostController) {
                 }
 
             )
+            Spacer(modifier = Modifier.padding(5.dp))
+
+        OutlinedTextField(value = userType.value, onValueChange ={
+            userType.value = it
+        },
+
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { menuIsState.value = true }) {
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+                }
+
+            },
+            label = { Text(text = "Kullanıcı Türü",color = MaterialTheme.colorScheme.onPrimary)}, colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                disabledLabelColor = MaterialTheme.colorScheme.onBackground,
+                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary
+            ) )
+
+                DropdownMenu(expanded = menuIsState.value , onDismissRequest = { menuIsState.value = false }) {
+                    DropdownMenuItem(text = { Text(text = "Üye", color = MaterialTheme.colorScheme.onPrimary) },
+                        onClick = { userType.value = "Üye"
+                                    menuIsState.value = false})
+                    DropdownMenuItem(text = { Text(text = "Core Team Üyesi", color = MaterialTheme.colorScheme.onPrimary) },
+                        onClick = { userType.value = "Core Team Üyesi"
+                                    menuIsState.value = false})
+                    DropdownMenuItem(text = { Text(text = "Lider", color = MaterialTheme.colorScheme.onPrimary) },
+                        onClick = { userType.value = "Lider"
+                                    menuIsState.value = false})
+
+                }
+
 
             Spacer(modifier = Modifier.padding(5.dp))
 
@@ -217,11 +263,17 @@ fun RegisterScreen(navController: NavHostController) {
                                                 val data = hashMapOf(
                                                     "username" to username.value,
                                                     "email" to userEmail.value,
-                                                    "profilePhoto" to ""
+                                                    "profilePhoto" to "",
+                                                    "user_type" to userType.value
                                                 )
                                                 Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
-                                                db.collection("users").document(userEmail.value).set(data)
-                                                navController.navigate("login_screen")
+                                                if (userType.value.isNotEmpty()){
+                                                    db.collection("users").document(userEmail.value).set(data)
+                                                    navController.navigate("login_screen")
+                                                }else{
+                                                    Toast.makeText(context,"Lütfen Kullanıcı Türünüzü Belirtin",Toast.LENGTH_SHORT).show()
+                                                }
+
                                             } else {
                                                 // If sign in fails, display a message to the user.
                                                 Log.w("ErrorAuth", "signInWithEmail:failure", task.exception)

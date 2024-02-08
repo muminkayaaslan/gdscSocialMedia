@@ -200,9 +200,18 @@ fun LoginScreen(navController: NavHostController) {
                 fontSize = 15.sp,
                 fontFamily = googleSans
             )
+            Text(modifier = Modifier.clickable {
+                                               navController.navigate("guest_screen")
+            },text = "Misafir Kullanıcı",
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 15.sp,
+                fontFamily = googleSans)
         }
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            Column (Modifier.fillMaxWidth().height(50.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
+            Column (
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 0.8.dp,

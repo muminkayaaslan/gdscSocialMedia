@@ -74,7 +74,9 @@ fun UserProfile(navController: NavHostController, username: String?) {
         val isLoading= remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
         val context = LocalContext.current
-
+        val userType = remember {
+            mutableStateOf("")
+        }
 
 
         LaunchedEffect(username) {

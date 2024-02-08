@@ -49,12 +49,5 @@ fun SplashScreen(navController: NavHostController) {
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Image(modifier = Modifier.size(150.dp),bitmap = ImageBitmap.imageResource(R.drawable.logo_icon_social), contentDescription = null)
         }
-        Column(modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(modifier = Modifier.size(35.dp),bitmap = ImageBitmap.imageResource(R.drawable.tr_background_logo), contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            Text(text = "ASLAN Software Studio", color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.5.sp, fontFamily = googleSans)
-            Spacer(modifier = Modifier.padding(vertical = 60.dp))
-        }
     }
 }
