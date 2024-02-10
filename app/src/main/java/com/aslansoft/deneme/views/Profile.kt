@@ -411,7 +411,7 @@ fun ProfileScreen(navController: NavHostController) {
                             modifier = Modifier.fillMaxHeight(),
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary)
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.background)
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(
@@ -419,7 +419,7 @@ fun ProfileScreen(navController: NavHostController) {
                                 .fillMaxHeight()
                                 .padding(top = 5.dp),
                             text = "Ayarlar",
-                            color = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontFamily = googleSans
                         )
                         Spacer(modifier = Modifier.padding(1.dp))

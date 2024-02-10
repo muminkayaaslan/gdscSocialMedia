@@ -189,25 +189,22 @@ fun GuestScreen(navController: NavHostController) {
                                     }else{
                                         Icon(modifier = Modifier
                                             .fillMaxSize(),
-                                            imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                            imageVector = Icons.Filled.AccountCircle, contentDescription = null, tint =  if (isSystemInDarkTheme()) {
+                                                MaterialTheme.colorScheme.background
+                                            }
+                                            else{
+                                                Color.DarkGray
+                                            })
                                     }
                                 }
                                 Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
-                                if (isSystemInDarkTheme()){
-                                    Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.Gray, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
-                                }else{
-                                    Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
 
-                                }
-                            }
-
-
-                            if (isSystemInDarkTheme()){
-                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = Color.White, fontSize = 17.sp, fontFamily = googleSans)
-                            }else{
-                                Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = MaterialTheme.colorScheme.onPrimary, fontSize = 17.sp, fontFamily = googleSans)
+                                Text(modifier = Modifier.padding(start = 5.dp, top = 7.dp),text = postData.username, color = Color.Gray, fontWeight = FontWeight.Bold, fontSize = 15.sp, fontFamily = googleSans )
 
                             }
+
+                            Text(modifier = Modifier.padding(start = 15.dp, top = 1.dp, bottom = 3.dp),text = postData.post,color = MaterialTheme.colorScheme.background, fontSize = 17.sp, fontFamily = googleSans)
+
                             if (postData.postPhoto.isNotEmpty()){
                                 val painter =
                                     rememberAsyncImagePainter(model = postData.postPhoto)
