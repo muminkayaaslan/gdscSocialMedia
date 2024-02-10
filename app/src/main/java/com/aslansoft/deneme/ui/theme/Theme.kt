@@ -16,22 +16,22 @@ import androidx.compose.ui.platform.LocalView
 
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color.Black,
-    secondary = Color(255, 255, 255, 255), //beyaz
+    primary = Color(35,38,35),
+    secondary = Color(211, 211, 211, 255), //beyaz
     tertiary = Color(10, 255, 15), // kırmızı
-    background = Color.White,
+    background = Color(232,232,232),
     onPrimary = Color(0xff567962), //yeşil
     onBackground = Color(0xffb0af80), //sarı
     onSecondary = Color(0xff7699a4) // mavi
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color.White,
+    primary = Color(255, 255, 255, 255),
     secondary = Color(186, 203, 196, 255), //
     tertiary = Color(218, 87, 77, 255), //kırmızı
     onPrimary = Color(120, 210, 123, 255), //yeşil
     onBackground = Color(169, 163, 118, 255), // açık yeşil
-    background = Color.Black,   //  Koyu yeşil
+    background = Color(13,19,13),   //  Koyu yeşil
     onSecondary = Color(115,210,210)
 )
 

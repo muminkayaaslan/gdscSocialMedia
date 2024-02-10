@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
@@ -31,12 +32,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -110,16 +113,17 @@ fun RegisterScreen(navController: NavHostController) {
                 username.value = it
             }, singleLine = true
                 ,label = { Text(text = "Kullanıcı Adı", fontFamily = googleSans)},
-                colors= OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
-                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
-                    cursorColor = MaterialTheme.colorScheme.onPrimary),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedTextColor = Color.Gray,
+                    focusedTextColor = MaterialTheme.colorScheme.background,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedLabelColor = Color.Gray,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onSecondary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 println(username.value)
@@ -127,32 +131,32 @@ fun RegisterScreen(navController: NavHostController) {
                 userEmail.value = it
             }, label = { Text(text = "E-Posta", fontFamily = googleSans) },
                 placeholder = { Text(text = "username@example.com", fontFamily = googleSans)},
-                singleLine = true, colors = outlinedTextFieldColors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
-                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
-                    cursorColor = MaterialTheme.colorScheme.onPrimary
-            ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                singleLine = true, colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedTextColor = Color.Gray,
+                    focusedTextColor = MaterialTheme.colorScheme.background,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedLabelColor = Color.Gray,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onSecondary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             OutlinedTextField(value = password.value, onValueChange = {
                 password.value = it
             }, label = { Text(text = "Parola", fontFamily = googleSans) },
-                singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
-                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
-                    cursorColor = MaterialTheme.colorScheme.onPrimary
-            ),
+                singleLine = true, colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedTextColor = Color.Gray,
+                    focusedTextColor = MaterialTheme.colorScheme.background,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedLabelColor = Color.Gray,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onSecondary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 , visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
@@ -173,16 +177,16 @@ fun RegisterScreen(navController: NavHostController) {
             OutlinedTextField(value = accessPassword.value, onValueChange = {
                 accessPassword.value = it
             }, label = { Text(text = "Parola Doğrula", fontFamily = googleSans) },
-                singleLine = true, colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledLabelColor = MaterialTheme.colorScheme.onBackground,
-                    focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onPrimary, backgroundColor = MaterialTheme.colorScheme.primary),
-                    cursorColor = MaterialTheme.colorScheme.onPrimary
+                singleLine = true, colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedTextColor = Color.Gray,
+                    focusedTextColor = MaterialTheme.colorScheme.background,
+                    disabledLabelColor = Color.LightGray,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedLabelColor = Color.Gray,
+                    selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onSecondary, backgroundColor = MaterialTheme.colorScheme.primary),
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
                 ),keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (accessPasswordVisibility.value) VisualTransformation.None else PasswordVisualTransformation()
                 , trailingIcon = {
@@ -204,7 +208,6 @@ fun RegisterScreen(navController: NavHostController) {
         OutlinedTextField(value = userType.value, onValueChange ={
             userType.value = it
         },
-
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { menuIsState.value = true }) {
@@ -212,28 +215,57 @@ fun RegisterScreen(navController: NavHostController) {
                 }
 
             },
-            label = { Text(text = "Kullanıcı Türü",color = MaterialTheme.colorScheme.onPrimary)}, colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                disabledLabelColor = MaterialTheme.colorScheme.onBackground,
-                focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onPrimary
-            ) )
+            label = { Text(text = "Kullanıcı Türü",color = Color.Gray)},
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                unfocusedTextColor = Color.Gray,
+                focusedTextColor = MaterialTheme.colorScheme.background,
+                disabledLabelColor = Color.LightGray,
+                focusedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                unfocusedLabelColor = Color.Gray,
+                selectionColors = TextSelectionColors(handleColor = MaterialTheme.colorScheme.onSecondary, backgroundColor = MaterialTheme.colorScheme.primary),
+                cursorColor = MaterialTheme.colorScheme.onSecondary
+            ))
 
-                DropdownMenu(expanded = menuIsState.value , onDismissRequest = { menuIsState.value = false }) {
-                    DropdownMenuItem(text = { Text(text = "Üye", color = MaterialTheme.colorScheme.onPrimary) },
-                        onClick = { userType.value = "Üye"
-                                    menuIsState.value = false})
-                    DropdownMenuItem(text = { Text(text = "Core Team Üyesi", color = MaterialTheme.colorScheme.onPrimary) },
-                        onClick = { userType.value = "Core Team Üyesi"
-                                    menuIsState.value = false})
-                    DropdownMenuItem(text = { Text(text = "Lider", color = MaterialTheme.colorScheme.onPrimary) },
-                        onClick = { userType.value = "Lider"
-                                    menuIsState.value = false})
+             Box(modifier = Modifier.wrapContentSize(Alignment.CenterEnd)) {
+                 DropdownMenu(
+                     expanded = menuIsState.value,
+                     onDismissRequest = { menuIsState.value = false }) {
+                     DropdownMenuItem(text = {
+                         Text(
+                             text = "Üye",
+                             color = Color.Gray
+                         )
+                     },
+                         onClick = {
+                             userType.value = "Üye"
+                             menuIsState.value = false
+                         })
+                     DropdownMenuItem(text = {
+                         Text(
+                             text = "Core Team Üyesi",
+                             color = Color.Gray
+                         )
+                     },
+                         onClick = {
+                             userType.value = "Core Team Üyesi"
+                             menuIsState.value = false
+                         })
+                     DropdownMenuItem(text = {
+                         Text(
+                             text = "Lider",
+                             color = Color.Gray
+                         )
+                     },
+                         onClick = {
+                             userType.value = "Lider"
+                             menuIsState.value = false
+                         })
 
-                }
+                 }
+             }
+
 
 
             Spacer(modifier = Modifier.padding(5.dp))
@@ -308,8 +340,8 @@ fun RegisterScreen(navController: NavHostController) {
                 else{
                     Toast.makeText(context,"Gerekli Alanları Doldurmak Zorundasınız", Toast.LENGTH_SHORT).show()
                 }
-            }, border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onPrimary)) {
-                Text(text = "Kayıt Ol", color = MaterialTheme.colorScheme.onPrimary)
+            }, border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onBackground)) {
+                Text(text = "Kayıt Ol", color = MaterialTheme.colorScheme.onBackground)
             }
         }
     }

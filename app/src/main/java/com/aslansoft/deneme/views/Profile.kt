@@ -338,7 +338,12 @@ fun ProfileScreen(navController: NavHostController) {
                                                 .fillMaxSize(),
                                             imageVector = Icons.Filled.AccountCircle,
                                             contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onPrimary
+                                            tint = if (isSystemInDarkTheme()) {
+                                                MaterialTheme.colorScheme.background
+                                            }
+                                            else{
+                                                Color.DarkGray
+                                            }
                                         )
                                     }
                                 }
@@ -362,7 +367,7 @@ fun ProfileScreen(navController: NavHostController) {
                                     bottom = 3.dp
                                 ),
                                 text = postData.post,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = MaterialTheme.colorScheme.background,
                                 fontSize = 17.sp,
                                 fontFamily = googleSans
                             )
@@ -385,9 +390,6 @@ fun ProfileScreen(navController: NavHostController) {
                     }
                 }
             }
-
-
-
         // Alttan açılan Menü
         if (bottomSheetIsOpen) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -417,7 +419,7 @@ fun ProfileScreen(navController: NavHostController) {
                                 .fillMaxHeight()
                                 .padding(top = 5.dp),
                             text = "Ayarlar",
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.background,
                             fontFamily = googleSans
                         )
                         Spacer(modifier = Modifier.padding(1.dp))
@@ -435,7 +437,12 @@ fun ProfileScreen(navController: NavHostController) {
                             modifier = Modifier.fillMaxHeight(),
                             imageVector = Icons.Outlined.AccountCircle,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary)
+                            colorFilter = ColorFilter.tint(color = if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.background
+                            }
+                            else{
+                                Color.DarkGray
+                            })
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(

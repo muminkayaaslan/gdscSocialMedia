@@ -22,10 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
@@ -173,19 +176,35 @@ fun UserProfile(navController: NavHostController, username: String?) {
                             modifier = Modifier.fillMaxSize(),
                             imageVector = Icons.Filled.AccountCircle,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                            colorFilter = ColorFilter.tint(
+                                if (isSystemInDarkTheme()) {
+                                    MaterialTheme.colorScheme.background
+                                }
+                                else{
+                                    Color.DarkGray
+                                }
+                            )
                         )
                     }
                 }
             }
 
-            //kendi paylaştığın gönderiler
+
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
                 Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = MaterialTheme.colorScheme.background)
-                username?.let { Text(text = it, fontStyle = FontStyle.Italic, fontSize = 45.sp,color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans) }
+                username?.let {
+                    Text(
+                        text = it,
+                        fontSize = 30.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontFamily = googleSans
+                    )
+                }
                 Divider( modifier = Modifier.width(50.dp),thickness = 1.dp,color = MaterialTheme.colorScheme.background)
             }
             Spacer(modifier = Modifier.padding(30.dp))
+
+            //kendi paylaştığın gönderiler
             if (userPostList.isEmpty() && !isLoading.value){
                 if (isLoading.value) {
                     Box(
@@ -217,80 +236,92 @@ fun UserProfile(navController: NavHostController, username: String?) {
                 LazyColumn(modifier = Modifier.weight(1f)){
                     items(userPostList.size){index ->
                         val postData = userPostList[index]
-                        OutlinedCard(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 3.dp, end = 3.dp, start = 3.dp)
-                            .clip(
-                                RoundedCornerShape(10.dp)
-                            ), border = BorderStroke(0.5.dp,MaterialTheme.colorScheme.onPrimary)
+                        ElevatedCard(
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 6.dp
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 3.dp, end = 3.dp, start = 3.dp),
+                            colors = CardDefaults.elevatedCardColors(
+                                contentColor = Color.Gray
+                            ),
+                            shape = RoundedCornerShape(24.dp)
                         ) {
                             val timestamp = postData.date.seconds + postData.date.nanoseconds / 1000000000
                             val dateData = Date(timestamp * 1000L)
                             val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
                             val formattedDate = format.format(dateData)
-                            Row (modifier = Modifier.fillMaxWidth()){
-                                if (postData.profilePhoto.isNotEmpty()){
-                                    val painter = rememberAsyncImagePainter(
-                                        ImageRequest.Builder(LocalContext.current).data(data = postData.profilePhoto).apply(block = fun ImageRequest.Builder.() {
-                                            crossfade(true)
-                                            transformations(CircleCropTransformation())
-                                        }).build()
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .padding(5.dp)
+                                        .border(BorderStroke(0.5.dp, Color.Gray), CircleShape),
+                                    contentAlignment = Alignment.TopStart
+                                ) {
+                                    if (profilePhoto.value.isNotEmpty()) {
+                                        val painter = rememberAsyncImagePainter(
+                                            ImageRequest.Builder(LocalContext.current)
+                                                .data(data = profilePhoto.value)
+                                                .apply(block = fun ImageRequest.Builder.() {
+                                                    crossfade(true)
+                                                    transformations(CircleCropTransformation())
+                                                }).build()
+                                        )
+                                        Image(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(CircleShape),
+                                            painter = painter,
+                                            contentDescription = null
+                                        )
+
+                                    } else {
+                                        Icon(
+                                            modifier = Modifier
+                                                .fillMaxSize(),
+                                            imageVector = Icons.Filled.AccountCircle,
+                                            contentDescription = null,
+                                            tint = if (isSystemInDarkTheme()) {
+                                                MaterialTheme.colorScheme.background
+                                            }
+                                            else{
+                                                Color.DarkGray
+                                            }
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.padding(horizontal = 0.9.dp))
+                                username?.let {
+                                    Text(
+                                        modifier = Modifier.padding(start = 5.dp, top = 7.dp),
+                                        text = it,
+                                        color = Color.Gray,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = googleSans
                                     )
-
-                                    Image(modifier = Modifier
-                                        .size(25.dp)
-                                        .padding(start = 3.dp, top = 3.dp),painter = painter, contentDescription = null)
-                                }
-                                else {
-                                    Image(modifier = Modifier
-                                        .size(25.dp)
-                                        .padding(start = 3.dp, top = 3.dp, bottom = 2.dp),imageVector = Icons.Filled.AccountCircle , contentDescription = null, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary))
-                                }
-                                if (isSystemInDarkTheme()){
-                                    username?.let {
-                                        Text(
-                                            modifier = Modifier.padding(
-                                                start = 3.dp,
-                                                bottom = 2.dp,
-                                                top = 2.dp
-                                            ),
-                                            text = it,
-                                            color = MaterialTheme.colorScheme.secondary,
-                                            fontWeight = FontWeight.Bold,
-                                            fontFamily = googleSans
-                                        )
-                                    }
-
-                                }else{
-                                    if (username != null) {
-                                        Text(
-                                            modifier = Modifier.padding(
-                                                start = 3.dp,
-                                                bottom = 2.dp,
-                                                top = 2.dp
-                                            ),
-                                            text = username,
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                            fontWeight = FontWeight.Bold,
-                                            fontFamily = googleSans
-                                        )
-                                    }
-
-                                }
-
-                            }
-                            Row (modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, bottom = 3.dp)){
-                                if(isSystemInDarkTheme()){
-                                    Text(text = postData.post, color = MaterialTheme.colorScheme.secondary, fontFamily = googleSans)
-                                }else{
-                                    Text(text = postData.post, color = MaterialTheme.colorScheme.onPrimary, fontFamily = googleSans)
-
                                 }
 
 
                             }
+
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 15.dp,
+                                    top = 1.dp,
+                                    bottom = 3.dp
+                                ),
+                                text = postData.post,
+                                color = MaterialTheme.colorScheme.background,
+                                fontSize = 17.sp,
+                                fontFamily = googleSans
+                            )
 
 
                             Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
