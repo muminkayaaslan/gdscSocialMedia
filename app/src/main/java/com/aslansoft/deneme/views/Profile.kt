@@ -3,20 +3,12 @@
 package com.aslansoft.deneme.views
 
 import android.annotation.SuppressLint
-import android.webkit.WebSettings.TextSize
-import android.widget.EditText
-import android.widget.HorizontalScrollView
 import android.widget.Toast
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +28,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,11 +38,12 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -58,12 +52,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -72,15 +63,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -92,21 +77,18 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 data class MyPost(
     val post: String,
     val postPhoto: String,
-    val date: Timestamp
+    val date: Timestamp,
+    val docId: String
 )
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavHostController) {
+
     Surface(
         Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.primary
@@ -121,7 +103,10 @@ fun ProfileScreen(navController: NavHostController) {
         var bottomSheetIsOpen by remember { mutableStateOf(false) }
         val profilePhoto = remember { mutableStateOf("") }
         val context = LocalContext.current
-
+        val deleteDialog = remember { mutableStateOf(false) }
+        val docId = remember {
+            mutableStateOf("")
+        }
         currentUser?.email?.let {
 
             db.collection("users").document(it).get().addOnSuccessListener { snapShot ->
@@ -143,9 +128,9 @@ fun ProfileScreen(navController: NavHostController) {
                         val currentPost = postData["post"].toString()
                         val postPhoto = postData["post_url"].toString()
                         val currentDate = postData["date"] as Timestamp?
-
+                        val docId = document.id
                         if (currentDate != null) {
-                            val myPost = MyPost(currentPost, postPhoto, currentDate)
+                            val myPost = MyPost(currentPost, postPhoto, currentDate,docId)
                             myPostList.add(myPost)
                         }
                     }
@@ -211,9 +196,44 @@ fun ProfileScreen(navController: NavHostController) {
                     )
             )
 
+            Spacer(modifier = Modifier.padding(30.dp))
+            Row(modifier = Modifier
+                .height(150.dp)
+                .fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
+                Box(
+                    modifier = Modifier
+                        .size(150.dp)
+                ) {
+                    if (profilePhoto.value.isNotEmpty()) {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painter,
+                            contentDescription = null
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.fillMaxSize(),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+                        )
+                    }
+                }
+            }
+
+
+            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = MaterialTheme.colorScheme.background)
+                Text(
+                    text = username.value,
+                    fontSize = 45.sp,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontFamily = googleSans
+                )
+                Divider( modifier = Modifier.width(50.dp),thickness = 1.dp,color = MaterialTheme.colorScheme.background)
+            }
             //kendi paylaştığın gönderiler
             Spacer(modifier = Modifier.padding(10.dp))
-            /*
             if (myPostList.isEmpty() && !isLoading.value) {
                 if (isLoading.value) {
                     Box(
@@ -240,50 +260,8 @@ fun ProfileScreen(navController: NavHostController) {
                         )
                     }
                 }
-            } else {*/
+            } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    item {
-                        Spacer(modifier = Modifier.padding(30.dp))
-                        Row(modifier = Modifier.height(150.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-                            Box(
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .border(BorderStroke(2.dp,gradient), CircleShape)
-                            ) {
-                                if (profilePhoto.value.isNotEmpty()) {
-                                    Image(
-                                        modifier = Modifier.fillMaxSize().animateContentSize() // Yeni resim yüklendiğinde bileşeni yeniden boyutlandır
-                                            .alpha(
-                                                animateFloatAsState(
-                                                targetValue = if (profilePhoto.value.isNotEmpty()) 1f else 0f,
-                                                animationSpec = TweenSpec(durationMillis = 300),
-                                                label = "" // Fade süresi
-                                            ).value),
-                                        painter = painter,
-                                        contentDescription = null
-                                    )
-                                } else {
-                                    Image(
-                                        modifier = Modifier.fillMaxSize(),
-                                        imageVector = Icons.Filled.AccountCircle,
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
-                                    )
-                                }
-                            }
-                        }
-                        Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically){
-                            Divider( modifier = Modifier.width(50.dp),thickness = 1.dp, color = MaterialTheme.colorScheme.background)
-                            Text(
-                                text = username.value,
-                                fontSize = 30.sp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                fontFamily = googleSans
-                            )
-                            Divider( modifier = Modifier.width(50.dp),thickness = 1.dp,color = MaterialTheme.colorScheme.background)
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
-                    }
                     items(myPostList.size) { index ->
                         val postData = myPostList[index]
                         ElevatedCard(
@@ -298,11 +276,6 @@ fun ProfileScreen(navController: NavHostController) {
                             ),
                             shape = RoundedCornerShape(24.dp)
                         ) {
-                            val timestamp =
-                                postData.date.seconds + postData.date.nanoseconds / 1000000000
-                            val dateData = Date(timestamp * 1000L)
-                            val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
-                            val formattedDate = format.format(dateData)
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -338,12 +311,7 @@ fun ProfileScreen(navController: NavHostController) {
                                                 .fillMaxSize(),
                                             imageVector = Icons.Filled.AccountCircle,
                                             contentDescription = null,
-                                            tint = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background
-                                            }
-                                            else{
-                                                Color.DarkGray
-                                            }
+                                            tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                 }
@@ -357,7 +325,33 @@ fun ProfileScreen(navController: NavHostController) {
                                     fontSize = 15.sp,
                                     fontFamily = googleSans
                                 )
-
+                                Row (modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
+                                    IconButton(onClick = { deleteDialog.value = true }) {
+                                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "")
+                                    }
+                                }
+                            }
+                            if (deleteDialog.value){
+                                AlertDialog(
+                                    onDismissRequest = { deleteDialog.value = false },
+                                    confirmButton = { TextButton(onClick = {
+                                        db.collection("posts").document(postData.docId).delete().addOnSuccessListener {
+                                            Toast.makeText(context, "Gönderi Başarıyla Kaldırıldı",Toast.LENGTH_SHORT).show()
+                                            navController.navigate("profile_screen")
+                                        }
+                                    }) {
+                                        Text(text = "Evet", color = MaterialTheme.colorScheme.onPrimary)
+                                    } },
+                                    dismissButton = { TextButton(onClick = {deleteDialog.value = false}) {
+                                        Text(text = "Hayır", color = MaterialTheme.colorScheme.onPrimary)
+                                    }},
+                                    text = {
+                                        Text(text = "Gönderiyi silmek istediğinizden emin misiniz?", color = MaterialTheme.colorScheme.onPrimary)
+                                    },
+                                    title = { Text(text = "Gönderiyi Sil", color = MaterialTheme.colorScheme.onPrimary)},
+                                    icon = { Icon(imageVector = Icons.Outlined.Delete, contentDescription = "", tint = MaterialTheme.colorScheme.onPrimary)})
                             }
 
                             Text(
@@ -367,7 +361,7 @@ fun ProfileScreen(navController: NavHostController) {
                                     bottom = 3.dp
                                 ),
                                 text = postData.post,
-                                color = MaterialTheme.colorScheme.background,
+                                color = Color.White,
                                 fontSize = 17.sp,
                                 fontFamily = googleSans
                             )
@@ -390,6 +384,9 @@ fun ProfileScreen(navController: NavHostController) {
                     }
                 }
             }
+        }
+
+
         // Alttan açılan Menü
         if (bottomSheetIsOpen) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -411,7 +408,7 @@ fun ProfileScreen(navController: NavHostController) {
                             modifier = Modifier.fillMaxHeight(),
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.background)
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary)
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(
@@ -437,12 +434,7 @@ fun ProfileScreen(navController: NavHostController) {
                             modifier = Modifier.fillMaxHeight(),
                             imageVector = Icons.Outlined.AccountCircle,
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(color = if (isSystemInDarkTheme()) {
-                                MaterialTheme.colorScheme.background
-                            }
-                            else{
-                                Color.DarkGray
-                            })
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimary)
                         )
                         Spacer(modifier = Modifier.padding(3.dp))
                         Text(
