@@ -64,7 +64,10 @@ import com.aslansoft.deneme.views.Settings
 import com.aslansoft.deneme.views.SplashScreen
 import com.aslansoft.deneme.views.UserProfile
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -74,7 +77,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         FirebaseApp.initializeApp(this)
-
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
         setContent {
             DenemeTheme {
 

@@ -95,6 +95,9 @@ fun RegisterScreen(navController: NavHostController) {
         val userType = remember {
             mutableStateOf("")
         }
+        val userState = remember {
+            mutableStateOf(false)
+        }
 
 
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -296,7 +299,8 @@ fun RegisterScreen(navController: NavHostController) {
                                                     "username" to username.value,
                                                     "email" to userEmail.value,
                                                     "profilePhoto" to "",
-                                                    "user_type" to userType.value
+                                                    "user_type" to userType.value,
+                                                    "user_state" to userState.value
                                                 )
                                                 Toast.makeText(context,"Kayıt Olma Başarılı", Toast.LENGTH_SHORT).show()
                                                 if (userType.value.isNotEmpty()){

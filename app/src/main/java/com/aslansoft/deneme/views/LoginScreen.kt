@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import androidx.navigation.NavHostController
 import com.aslansoft.deneme.R
 import com.aslansoft.deneme.ui.theme.googleSans
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
@@ -73,8 +75,14 @@ fun LoginScreen(navController: NavHostController) {
         var password: String by remember {
             mutableStateOf("")
         }
+        val userState = remember {
+            mutableStateOf(false)
+        }
         val auth = Firebase.auth
         val context = LocalContext.current
+        val db = Firebase.firestore
+
+
         Column(Modifier.fillMaxSize(),Arrangement.Center,Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.padding(top = 30.dp))
 
@@ -134,21 +142,35 @@ fun LoginScreen(navController: NavHostController) {
                 }
             )
             Spacer(modifier = Modifier.padding(5.dp))
-            OutlinedButton(onClick = { if (userEmail.isNotEmpty() && password.isNotEmpty()){
-                auth.signInWithEmailAndPassword(userEmail,password).addOnSuccessListener {
-                    val user = auth.currentUser
-                    if (user != null && user.isEmailVerified){
+            OutlinedButton(onClick = {
+                if (userEmail.isNotEmpty() && userEmail.contains("@") && userEmail.endsWith(".com")){
+                    db.collection("users").document(userEmail).get().addOnSuccessListener {
+                        val data = it.data
+                        userState.value = data?.get("user_state") as Boolean
+                    }
+                }
+                if (userEmail.isNotEmpty() && password.isNotEmpty()){
+                    if (userState.value){
+                        auth.signInWithEmailAndPassword(userEmail,password).addOnSuccessListener {
+                            val user = auth.currentUser
+                            if (user != null && user.isEmailVerified){
+                                navController.navigate("main_screen" )
+                                println("userstate:${userState.value}")
+                            }else{
+                                Toast.makeText(context,"Lütfen E-postanızı Doğrulayın",Toast.LENGTH_SHORT).show()
+                                println("userstate:${userState.value}")
+                            }
 
 
-                        navController.navigate("main_screen", )
+                        }.addOnFailureListener{
+                            Toast.makeText(context,"Giriş Yapma Başarısız",Toast.LENGTH_SHORT).show()
+                        }
                     }else{
-                        Toast.makeText(context,"Lütfen E-postanızı Doğrulayın",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,"Yönetici Onayı Bekleniyor...",Toast.LENGTH_SHORT).show()
                     }
 
 
-                }.addOnFailureListener{
-                    Toast.makeText(context,"Giriş Yapma Başarısız",Toast.LENGTH_SHORT).show()
-                }
+
             }else{
                 Toast.makeText(context,"Gerekli Alanları Doldurun", Toast.LENGTH_SHORT).show()
             }
@@ -201,7 +223,7 @@ fun LoginScreen(navController: NavHostController) {
                 fontFamily = googleSans
             )
             Text(modifier = Modifier.clickable {
-                                               navController.navigate("guest_screen")
+                navController.navigate("guest_screen")
             },text = "Misafir Kullanıcı",
                 color = MaterialTheme.colorScheme.secondary,
                 fontSize = 15.sp,
